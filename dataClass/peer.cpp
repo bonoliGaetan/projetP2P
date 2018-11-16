@@ -1,6 +1,2 @@
+#include "peer.h"
 
-
-class Peer
-{
-	
-}
