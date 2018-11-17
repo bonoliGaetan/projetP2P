@@ -1,0 +1,60 @@
+﻿       Liste des requêtes HTML
+
+GetPeerList :
+
+GET /peers
+Host: <urlPeer>
+
+Réponse:
+
+200 OK
+Body: 
+{ "list":[
+{"url":"<url>", "name":"<name>"},
+{"url":"<url>", "name":"<name>"},
+{"url":"<url>", "name":"<name>"},
+... ]
+}
+
+Erreur:
+
+404 Not Found
+
+
+GetFileList :
+
+GET /files
+Host: <urlPeer>
+
+Réponse :
+
+200 OK
+Body: 
+{ "list": [
+{"id":"<id>", "name":"<name>", "size":"<size>"},
+{"id":"<id>", "name":"<name>", "size":"<size>"},
+{"id":"<id>", "name":"<name>", "size":"<size>"},
+... ]
+}
+
+Erreur :
+
+404 Not Found
+
+GetFile :
+
+GET /files/<fileId>
+Host: <urlPeer>
+
+Réponse :
+
+200 OK
+Body: 
+{"body":"<contenu du fichier>"}
+
+Erreur :
+404 Not Found
+
+404 Not Found
+Body: {"error":"Fichier non trouvé"}
+

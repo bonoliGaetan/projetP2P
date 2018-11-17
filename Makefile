@@ -4,7 +4,7 @@ LIBS=
 
 CLIENTLIST=mInterfaceP2P.o mDataClass.o mClient.o
 SERVEURLIST=mInterfaceP2P.o mServeurMain.o mDataClass.o
-TESTLIST=
+TESTLIST=mClient.o mDataClass.o
 
 all: clean client server
 
@@ -22,5 +22,5 @@ test: mainTest.cpp $(TESTLIST)
 	
 
 clean:
-	rm -f *.o client.exe serveur.exe test.exe
+	rm -rf *.o client.exe serveur.exe test.exe
 
