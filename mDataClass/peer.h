@@ -2,5 +2,6 @@
 
 class Peer
 {
-
+	public:
+	std::string url;
 };

@@ -1,6 +1,7 @@
 #include<iostream>
 #include<string>
 #include<list>
+#include<fstream>
 
 #include"../mDataClass/peer.h"
 #include"../mDataClass/file.h"
@@ -10,7 +11,7 @@ class Client
 	private:
 	std::string url;
 	std::list<Peer> pairListe;
-	std::map<std::string,int> options;
+	// TODO => Liste d'option
 	
 	public:
 	void sauvegarde_fichier(std::string param);
