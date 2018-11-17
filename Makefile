@@ -8,13 +8,13 @@ TESTLIST=
 
 all: clean client server
 
-client: main.cpp $(CLIENTLIST)
+client: $(CLIENTLIST)
 	$(CC) $(FLAGS) -o client.exe $<
 
 serveur: $(SERVEURLIST)
 	$(CC) $(FLAGS) -o serveur.exe $<
 
-test: $(TESTLIST)
+test: mainTest.cpp $(TESTLIST)
 	$(CC) $(FLAGS) -o test.exe $<
 
 %.o:
