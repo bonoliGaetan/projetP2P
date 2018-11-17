@@ -2,6 +2,9 @@
 #include<string>
 #include<list>
 
+#include"../dataClass/peer.h"
+#include"../dataClass/file.h"
+
 class Client
 {
 	private:
