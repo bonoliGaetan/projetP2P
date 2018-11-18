@@ -64,7 +64,7 @@ public:
 	
 	// SERVEUR
 	void registerPeer(std::string dest, std::string url);
-	void unregisterPeer(std::string dest, str::string url);
+	void unregisterPeer(std::string dest, std::string url);
 
 	void SendPeerList(std::string dest, std::vector<Peer>);
 	void SendFileList(std::string dest, std::vector<File>);
