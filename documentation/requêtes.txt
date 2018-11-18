@@ -1,6 +1,6 @@
 ﻿       Liste des requêtes HTML
 
-GetPeerList :
+---- GetPeerList :
 
 GET /peers
 Host: <urlPeer>
@@ -20,8 +20,41 @@ Erreur:
 
 404 Not Found
 
+---- Register :
 
-GetFileList :
+POST /peers
+Host: <urlPeer>
+Body: {"url":"<url>", "name":"<name>"}
+
+Réponse:
+
+200 OK
+
+Erreur:
+
+404 Not Found
+
+---- Unregister :
+
+DELETE /peers
+Host: <urlPeer>
+Body: {"url":"url"}
+
+Réponse :
+
+200 OK
+
+Erreur :
+
+404 Not Found
+
+404 Not Found
+Body: {
+"errorId":"<id>",
+"error":"Le peer <url> n'a pas été trouvé."
+}
+
+---- GetFileList :
 
 GET /files
 Host: <urlPeer>
@@ -31,9 +64,9 @@ Réponse :
 200 OK
 Body: 
 { "list": [
-{"id":"<id>", "name":"<name>", "size":"<size>"},
-{"id":"<id>", "name":"<name>", "size":"<size>"},
-{"id":"<id>", "name":"<name>", "size":"<size>"},
+{"fileId":"<id>", "name":"<name>", "size":"<size>"},
+{"fileId":"<id>", "name":"<name>", "size":"<size>"},
+{"fileId":"<id>", "name":"<name>", "size":"<size>"},
 ... ]
 }
 
@@ -41,7 +74,21 @@ Erreur :
 
 404 Not Found
 
-GetFile :
+---- SendFile :
+
+POST /files
+Host: <urlPeer>
+Body: {"name":"<name>"}
+
+Réponse :
+
+200 OK
+Body: {"fileId":"<id>"}
+
+Erreur :
+404 Not Found
+
+---- GetFile :
 
 GET /files/<fileId>
 Host: <urlPeer>
@@ -50,11 +97,60 @@ Réponse :
 
 200 OK
 Body: 
-{"body":"<contenu du fichier>"}
+{"size":"<size>",
+"body":"<contenu du fichier>"
+}
 
 Erreur :
 404 Not Found
 
 404 Not Found
-Body: {"error":"Fichier non trouvé"}
+Body: {
+"errorId":"<id>",
+"error":"Fichier <id> non trouvé."
+}
 
+---- DeleteFile :
+
+DELETE /files/<fileId>
+Host: <urlPeer>
+
+Réponse :
+200 OK
+
+Erreur :
+404 Not Found
+
+404 Noy Found
+Body: {
+"errorId":"<id>",
+"error":"Fichier <id> non trouvé."
+}
+
+---- SendFileData :
+
+DELETE /files/<fileId>
+Host: <urlPeer>
+Body: {
+"name":"<name>", 
+"size":"<size>", 
+"body":"<contenu du fichier"
+};
+
+Réponse :
+200 OK
+
+Erreur :
+404 Not Found
+
+404 Noy Found
+Body: {
+"errorId":"<id>",
+"error":"Fichier <id> non trouvé."
+}
+
+403 Forbidden
+Body: {
+"errorId":"<id>",
+"error":"La taille maximale autorisée sur le serveur a été atteinte."
+} 

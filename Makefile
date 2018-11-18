@@ -5,7 +5,7 @@ CLIENTLIST=mInterfaceP2P.o mDataClass.o mClient.o
 SERVEURLIST=mInterfaceP2P.o mServeurMain.o mDataClass.o
 TESTLIST=mInterfaceP2P.o mDataClass.o
 
-all: clean client server
+all: clean client server 
 
 client: $(CLIENTLIST)
 	$(CC) $(FLAGS) -o client.exe $^ $(LIBS)
@@ -18,8 +18,8 @@ test: $(TESTLIST) mainTest.cpp
 
 %.o:
 	./make.sh $(PWD)/$(*) $(PWD) all
-	
 
 clean:
-	rm -f */*.o client.exe serveur.exe test.exe
+	rm -f client.exe serveur.exe test.exe
+	rm -f *.o
 

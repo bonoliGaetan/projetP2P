@@ -4,13 +4,13 @@ LIBS=
 
 FILES=serviceP2P.o
 
-all: clean mInterfaceP2P.o
+all: mInterfaceP2P.o clean
 
 mInterfaceP2P.o: $(FILES)
-	$(CC) $(CFLAGS) -c -o mInterfaceP2P.o $^  $(LIBS)
+	ld -r $^ -o ../mInterfaceP2P.o
 
 %.o: %.cpp %.h
-	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS)
+	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS) $(LIBS)
 
 clean:
 	rm -f *.o

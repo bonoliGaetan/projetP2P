@@ -4,13 +4,13 @@ LIBS=
 
 FILES=*.o
 
-all: clean mGraphique.o
+all: mGraphique.o clean
 
 mGraphique.o: $(FILES)
-	$(CC) $(CFLAGS) -c -o mGraphique.o $^  $(LIBS)
+	ld -r $^ -o ../mGraphique.o
 
 %.o: %.cpp %.h
-	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS)
+	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS) $(LIBS)
 
 clean:
 	rm -f *.o

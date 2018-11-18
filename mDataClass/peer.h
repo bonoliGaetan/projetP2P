@@ -1,3 +1,6 @@
+#ifndef PEER_H
+#define PEER_H
+
 #include<iostream>
 #include<string>
 #include<list>
@@ -10,3 +13,5 @@ class Peer
 	std::string nom;
 	std::list<File> fichiers;
 };
+
+#endif

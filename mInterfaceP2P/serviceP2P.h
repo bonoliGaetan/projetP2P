@@ -1,3 +1,6 @@
+#ifndef SERVICEP2P_H
+#define SERVICEP2P_H
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -13,18 +16,17 @@ using namespace utility;                    	// Common utilities like string con
 using namespace web;                        	// Common features like URIs.
 using namespace web::http;                  	// Common HTTP functionality
 using namespace web::http::client;          	// HTTP client features
-using namespace concurrency::streams;       	// Asynchronous streams
 using namespace web::http::experimental::listener;          // HTTP server
-using namespace web::experimental::web_sockets::client;     // WebSockets client
 using namespace web::json;                                  // JSON library
+using namespace concurrency::streams;       	// Asynchronous streams
 
 // ***************
 
 #include "../mDataClass/file.h"
 #include "../mDataClass/peer.h"
 
-#define LOCALHOST "127.0.0.1"
-
+#define LOCALHOST 	"127.0.0.1"
+#define HTTPLOGS	"httplog.txt"
 
 typedef struct
 {
@@ -44,7 +46,7 @@ public:
 
 	StError lastError;
 
-	void test();
+	void Test();
 
 	// CLIENT
 	std::vector<Peer> GetPeerList(std::string url);
@@ -98,3 +100,6 @@ protected:
 	// et les retours de requêtes
 
 };
+
+
+#endif

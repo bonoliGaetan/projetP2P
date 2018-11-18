@@ -1,3 +1,3 @@
 cd $1
-make $3 $2
+make $3
 cd $2
