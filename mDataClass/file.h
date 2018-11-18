@@ -1,3 +1,6 @@
+#ifndef FILE_H
+#define FILE_H
+
 #include<iostream>
 #include<string>
 
@@ -8,3 +11,5 @@ class File
 	int size;
 	std::string nom;
 };
+
+#endif

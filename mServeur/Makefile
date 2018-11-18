@@ -4,13 +4,13 @@ LIBS=
 
 FILES=serveur.o
 
-all: clean mServeur.o
+all: mServeur.o clean
 
 mServeur.o: $(FILES)
-	$(CC) $(CFLAGS) -c -o mServeur.o $<  $(LIBS)
+	ld -r $^ -o ../mServeur.o
 
 %.o: %.cpp %.h
-	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS)
+	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS) $(LIBS)
 
 clean:
 	rm -f *.o

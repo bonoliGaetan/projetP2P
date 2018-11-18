@@ -4,13 +4,13 @@ LIBS=
 
 FILES=client.o
 
-all: clean mClient.o
+all: mClient.o clean
 
 mClient.o: $(FILES)
-	$(CC) $(CFLAGS) -c -o mClient.o $<  $(LIBS)
+	ld -r $^ -o ../mClient.o
 
 %.o: %.cpp %.h
-	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS)
+	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS) $(LIBS)
 
 clean:
 	rm -f *.o

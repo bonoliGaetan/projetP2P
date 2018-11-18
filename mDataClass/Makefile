@@ -4,13 +4,13 @@ LIBS=
 
 FILES=file.o peer.o
 
-all: clean mDataClass.o
+all: mDataClass.o clean
 
 mDataClass.o: $(FILES)
-	$(CC) $(CFLAGS) -c -o mDataClass.o $<  $(LIBS)
+	ld -r $^ -o ../mDataClass.o
 
 %.o: %.cpp %.h
-	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS)
+	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS) $(LIBS)
 
 clean:
 	rm -f *.o
