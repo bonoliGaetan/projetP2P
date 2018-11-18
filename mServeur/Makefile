@@ -7,7 +7,7 @@ FILES=serveur.o
 all: clean mServeur.o
 
 mServeur.o: $(FILES)
-	$(CC) $(CFLAGS) -c -o mServeur.o $<  $(LIBS)
+	$(CC) $(CFLAGS) -c -o mServeur.o $^  $(LIBS)
 
 %.o: %.cpp %.h
 	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS)

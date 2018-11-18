@@ -7,7 +7,7 @@ FILES=client.o
 all: clean mClient.o
 
 mClient.o: $(FILES)
-	$(CC) $(CFLAGS) -c -o mClient.o $<  $(LIBS)
+	$(CC) $(CFLAGS) -c -o mClient.o $^  $(LIBS)
 
 %.o: %.cpp %.h
 	$(CC) -o $(*).o -c $(*).cpp $(CFLAGS)

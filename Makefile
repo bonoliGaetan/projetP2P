@@ -8,13 +8,13 @@ TESTLIST=mInterfaceP2P.o mDataClass.o
 all: clean client server
 
 client: $(CLIENTLIST)
-	$(CC) $(FLAGS) -o client.exe $< $(LIBS)
+	$(CC) $(FLAGS) -o client.exe $^ $(LIBS)
 
 serveur: $(SERVEURLIST)
-	$(CC) $(FLAGS) -o serveur.exe $< $(LIBS)
+	$(CC) $(FLAGS) -o serveur.exe $^ $(LIBS)
 
-test: mainTest.cpp $(TESTLIST)
-	$(CC) $(FLAGS) -o test.exe $< $(LIBS)
+test: $(TESTLIST) mainTest.cpp
+	$(CC) $(FLAGS) -o test.exe $^ $(LIBS)
 
 %.o:
 	./make.sh $(PWD)/$(*) $(PWD) all
