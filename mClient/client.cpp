@@ -1,5 +1,15 @@
 #include"client.h"
 
+Client::Client()
+{
+	init_pair_liste();
+}
+
+Client::~Client()
+{
+	ecriture_fichier_liste_pair();
+}
+
 std::vector<Peer> Client::get_pair_liste()
 {
 	return pairListe;

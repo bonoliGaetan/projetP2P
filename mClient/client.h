@@ -13,6 +13,8 @@ class Client
 	// TODO => Liste d'option
 	
 	public:
+	Client();
+	~Client();
 	// MAYBY TODO => void sauvegarde_fichier(std::string param);
 	std::vector<Peer> get_pair_liste(); // getter
 	void init_pair_liste(); // Prend le fichier contenant la liste des pair, et remplie pairListe
