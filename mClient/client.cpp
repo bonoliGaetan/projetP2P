@@ -1,6 +1,6 @@
 #include"client.h"
 
-std::list<Peer> Client::get_pair_liste()
+std::vector<Peer> Client::get_pair_liste()
 {
 	return pairListe;
 }
@@ -19,12 +19,17 @@ void Client::init_pair_liste()
 	{
 		std::cout<<"Le fichier listePaire.txt s'est ouvert"<<std::endl;
 		
-		std::string contenu;
+		std::string url;
+		std::string nom;
 		
-		while(fichier >> contenu) // On lis tout le fichier
+		while(fichier >> url && fichier >> nom) // On lis tout le fichier
 		{	
-			// TODO => On enregistre contenue dans la liste des pair
-			std::cout << contenu <<std::endl;
+			// On enregistre contenue dans la liste des pair
+			Peer pair;
+			pair.url = url;
+			pair.nom = nom;
+			
+			pairListe.push_back(pair);
 		}
 		
 		fichier.close();
@@ -35,7 +40,7 @@ void Client::init_pair_liste()
 	}
 }
 
-void Client::ajout_pair_liste(std::list<Peer> liste)
+void Client::ajout_pair_liste(std::vector<Peer> liste)
 {
 	;
 }
