@@ -1,7 +1,7 @@
 Ce qu'il faut faire :
 ---------------------
 
-
+Thread qui va écouté les "register" et "unregister" des serveurs.
 
 
 
