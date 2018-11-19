@@ -25,7 +25,7 @@ using namespace concurrency::streams;       	// Asynchronous streams
 #include "../mDataClass/file.h"
 #include "../mDataClass/peer.h"
 
-#define LOCALHOST 	"127.0.0.1"
+#define LOCALHOST 	"localhost"
 #define HTTPLOGS	"httplogs.txt"
 
 typedef struct
@@ -41,10 +41,13 @@ class ServiceP2P
 {
 public:
 
-	ServiceP2P();
+	ServiceP2P(std::string port);
 	~ServiceP2P();
 
 	StError lastError;
+	std::string myIpAddr;
+	std::string localhost;
+	std::string myPort;
 
 	// CLIENT
 	json::value GetPeerList(std::string dest);
@@ -80,6 +83,11 @@ public:
 
 protected:
 
+	string_t myIpAddr_t;
+	string_t localhost_t;
+	string_t myPort_t;
+	std::string getIPAddress();
+
 	std::vector<http_listener> clientListeners;
 	std::vector<http_listener> serverListeners;
 
@@ -88,7 +96,6 @@ protected:
 	void SetListenerMethod(http_listener &plistener, string_t pmethod, int fctTraitement(json::value,json::value&));
 
 	// TODO traitement erreurs
-
 };
 
 
