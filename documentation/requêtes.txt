@@ -9,11 +9,12 @@ Réponse:
 
 200 OK
 Body: 
-{ "list":[
-{"url":"<url>", "name":"<name>"},
-{"url":"<url>", "name":"<name>"},
-{"url":"<url>", "name":"<name>"},
-... ]
+{ "size","<size>",
+"list":[
+	{"url":"<url>", "name":"<name>"},
+	{"url":"<url>", "name":"<name>"},
+	{"url":"<url>", "name":"<name>"},
+	... ]
 }
 
 Erreur:
@@ -63,11 +64,12 @@ Réponse :
 
 200 OK
 Body: 
-{ "list": [
-{"fileId":"<id>", "name":"<name>", "size":"<size>"},
-{"fileId":"<id>", "name":"<name>", "size":"<size>"},
-{"fileId":"<id>", "name":"<name>", "size":"<size>"},
-... ]
+{ "size":"<size>",
+"list": [
+	{"fileId":"<id>", "name":"<name>", "size":"<size>"},
+	{"fileId":"<id>", "name":"<name>", "size":"<size>"},
+	{"fileId":"<id>", "name":"<name>", "size":"<size>"},
+	... ]
 }
 
 Erreur :
