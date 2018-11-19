@@ -28,6 +28,8 @@ using namespace concurrency::streams;       	// Asynchronous streams
 #define LOCALHOST 	"127.0.0.1"
 #define HTTPLOGS	"httplog.txt"
 
+
+
 typedef struct
 {
 	int code;
@@ -49,26 +51,26 @@ public:
 	void Test();
 
 	// CLIENT
-	std::vector<Peer> GetPeerList(std::string url);
-	std::vector<File> GetFileList(std::string url);
-	void GetFile(std::string url, File &file);
+	std::vector<Peer> GetPeerList(std::string dest);
+	std::vector<File> GetFileList(std::string dest);
+	void GetFile(std::string dest, File &file);
 	
-	void DeleteFile(std::string url, std::string id);
+	void DeleteFile(std::string dest, std::string id);
 
-	void UpdateDataFile(std::string url, File file);
-	void UpdateMetaFile(std::string url, File file);
+	void UpdateDataFile(std::string dest, File file);
+	void UpdateMetaFile(std::string dest, File file);
 
 	void WaitRequestClient(int* typeReq, void* data);
 	
 	// SERVEUR
-	void registerPeer(std::string url);
-	void unregisterPeer(std::string url);
+	void registerPeer(std::string dest, std::string url);
+	void unregisterPeer(std::string dest, std::string url);
 
-	void SendPeerList(std::string url, std::vector<Peer>);
-	void SendFileList(std::string url, std::vector<File>);
+	void SendPeerList(std::string dest, std::vector<Peer>);
+	void SendFileList(std::string dest, std::vector<File>);
 
-	void SendMetaFile(std::string url, File file);
-	void SendDataFile(std::string url, File file);
+	void SendMetaFile(std::string dest, File file);
+	void SendDataFile(std::string dest, File file);
 
 	void WaitRequestServer(int* typeReq, void* data);
 
