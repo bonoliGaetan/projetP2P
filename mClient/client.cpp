@@ -11,13 +11,6 @@ Client::~Client()
 	std::cout<<"FIN"<<std::endl;
 }
 
-
-void Client::requete_au_client()
-{
-	// fonction wait
-	// traiter ce que l'on a recu de la fonction wait
-}
-
 void Client::init_liste_option()
 {
 	// Ouverture du fichier contenant la liste des pairs.
