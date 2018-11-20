@@ -26,6 +26,10 @@ ServiceP2P::ServiceP2P(std::string port)
 	this->myIpAddr_t = utility::conversions::to_string_t(myIpAddr);
 	this->localhost_t = utility::conversions::to_string_t(localhost);
 	this->myPort_t = utility::conversions::to_string_t(myPort);
+
+	std::ofstream logFile(HTTPLOGS,std::ios::trunc);
+	logFile << "";
+	logFile.close();
 }
 
 ServiceP2P::~ServiceP2P() {}
@@ -76,15 +80,20 @@ json::value ServiceP2P::GetPeerList(std::string dest)
 
 int ServiceP2P::WaitRegister(int fctTraitement(json::value,json::value&))
 {
-	string_t path = "http://0.0.0.0:" +this->myPort_t +"/peers";
-	
-	http_listener* myListener = new http_listener(path);
-	this->SetListenerMethod(*myListener,U("GET"),fctTraitement);
-	myListener->open().wait();
+	//string_t path = "http://0.0.0.0:" +this->myPort_t +"/peers";
+	string_t path = U("http://*:") 
+					+this->myPort_t
+					+U("/peers");
 
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 	logFile << "SetListener:" << path << std::endl;
 	logFile.close();
+
+	http_listener* myListener = new http_listener(path);
+	this->SetListenerMethod(*myListener,U("GET"),fctTraitement);
+	myListener->open().wait();
+
+	
 
 	return 0; //clientListeners.add(myListener);
 }

@@ -3,7 +3,10 @@ CFLAGS=-O2 -Wall
 LIBS= -lboost_system -lcrypto -lssl -lcpprest
 CLIENTLIST=mInterfaceP2P.o mDataClass.o mClient.o
 SERVEURLIST=mInterfaceP2P.o mServeurMain.o mDataClass.o
-TESTLIST=mInterfaceP2P.o mDataClass.o
+
+TESTLISTMAX=mInterfaceP2P.o mDataClass.o
+TESTLISTGAE=
+TESTLISTALE=
 
 all: clean client server 
 
@@ -13,13 +16,19 @@ client: $(CLIENTLIST)
 serveur: $(SERVEURLIST)
 	$(CC) $(FLAGS) -o serveur.exe $^ $(LIBS)
 
-test: $(TESTLIST) mainTest.cpp
-	$(CC) $(FLAGS) -o test.exe $^ $(LIBS)
+testmax: $(TESTLISTMAX) mainTestMax.cpp
+	$(CC) $(FLAGS) -o testmax.exe $^ $(LIBS)
+
+testgae: $(TESTLISTMAX) mainTestGae.cpp
+	$(CC) $(FLAGS) -o testgae.exe $^ $(LIBS)
+
+testale: $(TESTLISTMAX) mainTestAle.cpp
+	$(CC) $(FLAGS) -o testale.exe $^ $(LIBS)
 
 %.o:
 	./make.sh $(PWD)/$(*) $(PWD) all
 
 clean:
-	rm -f client.exe serveur.exe test.exe
+	rm -f client.exe serveur.exe test*.exe
 	rm -f *.o
 
