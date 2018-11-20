@@ -1,4 +1,4 @@
-﻿       Liste des requêtes HTML
+       Liste des requêtes HTML
 
 ---- GetPeerList :
 
@@ -65,7 +65,7 @@ Réponse :
 200 OK
 Body: 
 { "size":"<size>",
-"list": [
+"listfile": [
 	{"fileId":"<id>", "name":"<name>", "size":"<size>"},
 	{"fileId":"<id>", "name":"<name>", "size":"<size>"},
 	{"fileId":"<id>", "name":"<name>", "size":"<size>"},
@@ -131,7 +131,7 @@ Body: {
 
 ---- SendFileData :
 
-DELETE /files/<fileId>
+POST /files/<fileId>
 Host: <urlPeer>
 Body: {
 "name":"<name>", 

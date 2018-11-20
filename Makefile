@@ -1,12 +1,12 @@
 CC=g++
 CFLAGS=-O2 -Wall 
-LIBS= -lboost_system -lcrypto -lssl -lcpprest
+LIBS= -lboost_system -lcrypto -lssl -lcpprest -std=c++11 -std=gnu++11
 CLIENTLIST=mInterfaceP2P.o mDataClass.o mClient.o
 SERVEURLIST=mInterfaceP2P.o mServeurMain.o mDataClass.o
 
 TESTLISTMAX=mInterfaceP2P.o mDataClass.o
 TESTLISTGAE=
-TESTLISTALE=
+TESTLISTALE=mClient.o mDataClass.o
 
 all: clean client server 
 

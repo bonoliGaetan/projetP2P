@@ -60,26 +60,26 @@ public:
 
 	void UpdateFile(std::string dest, File file);
 
-	// foncTraitement : int <nomfct>(json::value dataIn, json::value &dataOut);
-	int WaitRegister(int fctTraitement(json::value, json::value&));
-	int WaitUnregister(int fctTraitement(json::value, json::value&));
+	// foncTraitement : int <nomfct>(std::string paramUrl, json::value dataIn, json::value &dataOut);
+	void WaitRegister(int fctTraitement(std::string, json::value, json::value&));
+	void WaitUnregister(int fctTraitement(std::string, json::value, json::value&));
 
-	void CloseWaitClient(int plistener);
+	void CloseAllWaitClient();
 	
 	// SERVEUR
-	int RegisterPeer(std::string dest, std::string url);
-	int UnregisterPeer(std::string dest, std::string url);
+	void RegisterPeer(std::string dest, std::string url);
+	void UnregisterPeer(std::string dest, std::string url);
 
-	int WaitPeerList(int fctTraitement(json::value, json::value&));
-	int WaitFileList(int fctTraitement(json::value, json::value&));
-	int WaitGetFile(int fctTraitement(json::value, json::value&));
+	void WaitPeerList(int fctTraitement(std::string, json::value, json::value&));
+	void WaitFileList(int fctTraitement(std::string, json::value, json::value&));
+	void WaitGetFile(int fctTraitement(std::string, json::value, json::value&));
 
-	int WaitDeleteFile(int fctTraitement(json::value, json::value&));
+	void WaitDeleteFile(int fctTraitement(std::string, json::value, json::value&));
 
-	int WaitSaveFile(int fctTraitement(json::value, json::value&));
-	int WaitUpdateFile(int fctTraitement(json::value, json::value&));
+	void WaitSaveFile(int fctTraitement(std::string, json::value, json::value&));
+	void WaitUpdateFile(int fctTraitement(std::string, json::value, json::value&));
 
-	void CloseWaitServer(int plistener);
+	void CloseAllWaitServer();
 
 protected:
 
@@ -88,12 +88,12 @@ protected:
 	string_t myPort_t;
 	std::string getIPAddress();
 
-	std::vector<http_listener> clientListeners;
-	std::vector<http_listener> serverListeners;
+	std::vector<http_listener*> clientListeners;
+	std::vector<http_listener*> serverListeners;
 
 	json::value RequestHttp(std::string pdest,std::string pmethod, std::string ppath, json::value pbody);
 	
-	void SetListenerMethod(http_listener &plistener, string_t pmethod, int fctTraitement(json::value,json::value&));
+	void SetListenerMethod(http_listener &plistener, string_t pmethod, int fctTraitement(std::string, json::value,json::value&));
 
 	// TODO traitement erreurs
 };

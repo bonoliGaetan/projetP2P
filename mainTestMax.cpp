@@ -3,22 +3,22 @@
 
 using namespace web::json;  
 
-int testhandler(json::value dataIn, json::value &dataOut)
+int testhandler(std::string paramUrl, json::value dataIn, json::value &dataOut)
 {
-	dataOut = dataIn;
+	std::cout << paramUrl << std::endl;
+	dataOut.parse(dataIn.serialize());
+	dataOut["request"] = json::value(paramUrl);
+	std::cout << dataOut.serialize() << std::endl;
 }
 
 int main(void)
 {	
-	ServiceP2P s("65534");
+	ServiceP2P s("25565");
+	s.myIpAddr = "192.168.1.16";
+	
+	s.WaitGetFile(&testhandler);
 
-	std::cout << s.myIpAddr << ":" << s.myPort << std::endl;
-
-	s.WaitRegister(&testhandler);
-
-	//s.GetPeerList("http://" +s.myIpAddr +":" +s.myPort);
-
-	sleep(15);
-
+	s.GetFile("http://" +s.myIpAddr +":" +s.myPort,"aaa");
+	
 	return 0;
 }
