@@ -50,21 +50,21 @@ public:
 	std::string myPort;
 
 	// CLIENT
-	json::value GetPeerList(std::string dest);
-	json::value GetFileList(std::string dest);
-	json::value GetFile(std::string dest, std::string id);
+	std::vector<Peer> GetPeerList(std::string dest);
+	std::vector<File> GetFileList(std::string dest);
+	File GetFile(std::string dest, std::string id);
 	
 	void DeleteFile(std::string dest, std::string id);
 
-	void UpdateDataFile(std::string dest, json::value file);
-	void UpdateMetaFile(std::string dest, json::value file);
+	std::string SaveFile(std::string dest, File file);
+
+	void UpdateFile(std::string dest, File file);
 
 	// foncTraitement : int <nomfct>(json::value dataIn, json::value &dataOut);
 	int WaitRegister(int fctTraitement(json::value, json::value&));
 	int WaitUnregister(int fctTraitement(json::value, json::value&));
 
 	void CloseWaitClient(int plistener);
-	
 	
 	// SERVEUR
 	int RegisterPeer(std::string dest, std::string url);
@@ -76,8 +76,8 @@ public:
 
 	int WaitDeleteFile(int fctTraitement(json::value, json::value&));
 
-	int WaitUpdateMetaFile(int fctTraitement(json::value, json::value&));
-	int WaitUpdateDataFile(int fctTraitement(json::value, json::value&));
+	int WaitSaveFile(int fctTraitement(json::value, json::value&));
+	int WaitUpdateFile(int fctTraitement(json::value, json::value&));
 
 	void CloseWaitServer(int plistener);
 
