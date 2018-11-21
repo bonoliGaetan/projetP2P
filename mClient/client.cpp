@@ -68,7 +68,7 @@ std::map<std::string,std::string> Client::get_liste_option()
 }
 
 
-void Client::json_vers_fichier(json::value fichier)
+File Client::json_vers_fichier(json::value fichier)
 {
 	printf("LECTURE JSSSSSOOOOOONNNNN\n");
 	

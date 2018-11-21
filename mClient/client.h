@@ -10,7 +10,7 @@
 
 #include"../mDataClass/peer.h"
 
-using namespace web::json;
+using namespace web;
 
 class Client
 {
@@ -29,11 +29,17 @@ class Client
 	void init_liste_option(); // lis le fichier de la liste des option
 	void changer_liste_option(std::string nomOption,std::string nouvelleValeur);
 	
-	void json_vers_fichier(json::value fichier);
-	void json_vers_pair(json::value fichier);
+	File json_vers_fichier(json::value fichier);
+	Peer json_vers_pair(json::value fichier);
 	
-	void json_vers_liste_pair(json::value fichier);
-	void json_vers_liste_fichier(json::value fichier);
+	std::vector<Peer> json_vers_liste_pair(json::value fichier);
+	std::vector<FIle> json_vers_liste_fichier(json::value fichier);
+	
+	json::value fichier_vers_json(File fichier);
+	json::value pair_vers_json(Peer pair);
+	
+	json::value liste_pair_vers_json(std::vector<Peer> liste);
+	json::value liste_fichier_vers_json(std::vector<File> liste);
 	
 	void ajouter_liste_fichier();
 	void ajouter_liste_pair();
