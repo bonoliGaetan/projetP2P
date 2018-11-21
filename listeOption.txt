@@ -2,5 +2,6 @@ Repertoire_Client == nom du dossier "
 Repertoire_Serveur == ./mon_cul/oui "
 Taille_max_repertoire_Serveur = 1661
 Ip_init_Serveur = 192.168.0.1
+Mon_adresse_IP =
 Port_min = 1
 Port_max = 10000
