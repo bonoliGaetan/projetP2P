@@ -67,87 +67,56 @@ std::map<std::string,std::string> Client::get_liste_option()
 	return listeOption;
 }
 
-
-File Client::json_vers_fichier(json::value fichier)
+void Client::ajouter_liste_fichier()
 {
-	printf("LECTURE JSSSSSOOOOOONNNNN\n");
-	
-	utility::string_t size = "Size";
-	utility::string_t name = "Name";
-	utility::string_t id = "Id";
-	utility::string_t data = "Data";
-	
-	json::value a = fichier.at(size);
-	json::value b = fichier.at(name);
-	json::value c = fichier.at(id);
-	json::value d = fichier.at(data);
-	
-	std::cout<<a<<std::endl<<b<<std::endl<<c<<std::endl<<d<<std::endl;
-}
-
-/*void Client::ajouter_liste_fichier()
-{
-	json::value entree;
-	json::value sortie;
-	
-	WaitFileList(int fctTraitement("???", entree, sortie));
-	
-	File = json_vers_fichier(sortie);
-	
-	// Ajouter le fichier dans le chemin client
+	WaitGetFileList(int obtenir_liste_fichier(std::string, json::value, json::value&));
 }
 
 void Client::ajouter_liste_pair()
 {
-	json::value entree;
-	json::value sortie;
-	
-	WaitPeerList(int fctTraitement("???", entree, sortie));
-	
-	std::vector<Peer> liste = json_vers_liste_paire(sortie);
-	
-	for(int i = 0; i < listePair.size(); i++)
-	{
-		listePaire.push_back(liste[i]);
-	}
+	WaitGetPeerList(int obtenir_liste_pair(std::string, json::value, json::value&));
 }
 
 void Client::ajouter_pair()
 {
-	json::value entree;
-	json::value sortie;
-	
-	WaitRegister(int fctTraitement("???", entree, sortie));
-	
-	Peer paire = json_vers_pair(sortie);
-	
-	listePaire.push_back(paire);
+	WaitRegister(int enregistrement(std::string, json::value, json::value&));
 }
 
 void Client::supprimer_pair()
 {
-	json::value entree;
-	json::value sortie;
-	
-	WaitUnregister(int fctTraitement("???", entree, sortie));
-	
-	Peer paire = json_vers_pair(sortie);
-	
-	listePaire.push_back(paire);
-	
+	WaitUnregister(int desenregistrement(std::string, json::value, json::value&));
+}
+
+int Client::obtenir_liste_fichier(std::string param, json::value entree, json::value& sortie)
+{
+	// On envoit la liste des meta donnees
+	sortie = liste_fichier_vers_json(listeFichier);
+}
+
+int Client::obtenir_liste_pair(std::string param, json::value entree, json::value& sortie)
+{
+	// On envoit la liste des pair
+	sortie = liste_pair_vers_json(listePaire);
+}
+
+int Client::enregistrement(std::string param, json::value entree, json::value& sortie)
+{
+	// On ajoute un pair a notre liste de pair
+	Peer nouvPaire = json_vers_pair(entree);
+	listePaire.push_bock(nouvPaire);
+}
+
+int Client::desenregistrement(std::string urlPair, json::value entree, json::value& sortie)
+{
+	// On supprime un pair de notre liste de pair
 	for(int i = 0; i < listePaire.size(); i++)
 	{
-		if(pair.url == listePaire[i].url)
+		if(listePair[i].url == urlPair)
 		{
 			listePaire.erase(i);
 			break;
 		}
 	}
-	
-	
-}*/
-
-
-
+}
 
 
