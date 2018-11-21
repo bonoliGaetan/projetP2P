@@ -49,6 +49,18 @@ public:
 	std::string localhost;
 	std::string myPort;
 
+	// JSON
+
+	json::value FileToJson(File file);
+	json::value ListFileToJson(std::vector<File> filelist);
+	json::value PeerToJson(Peer peer);
+	json::value ListPeerToJson(std::vector<Peer> peerList);
+
+	File JsonToFile(json::value file);
+	std::vector<File> JsonToListFile(json::value fileList);
+	Peer JsonToPeer(json::value peer);
+	std::vector<Peer> JsonToListPeer(json::value peerList);
+
 	// CLIENT
 	std::vector<Peer> GetPeerList(std::string dest);
 	std::vector<File> GetFileList(std::string dest);
@@ -70,8 +82,8 @@ public:
 	void RegisterPeer(std::string dest, std::string url);
 	void UnregisterPeer(std::string dest, std::string url);
 
-	void WaitPeerList(int fctTraitement(std::string, json::value, json::value&));
-	void WaitFileList(int fctTraitement(std::string, json::value, json::value&));
+	void WaitGetPeerList(int fctTraitement(std::string, json::value, json::value&));
+	void WaitGetFileList(int fctTraitement(std::string, json::value, json::value&));
 	void WaitGetFile(int fctTraitement(std::string, json::value, json::value&));
 
 	void WaitDeleteFile(int fctTraitement(std::string, json::value, json::value&));

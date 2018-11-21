@@ -3,15 +3,15 @@
 
 #include<iostream>
 #include<string>
-#include<list>
+#include<vector>
 #include"file.h"
 
 class Peer
 {
 	public:
 	std::string url;
-	std::string nom;
-	std::list<File> fichiers;
+	std::string name;
+	std::vector<File> fileList;
 };
 
 #endif

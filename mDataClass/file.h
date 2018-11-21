@@ -9,7 +9,8 @@ class File
 	public:
 	std::string id;
 	int size;
-	std::string nom;
+	std::string name;
+	std::string body;
 };
 
 #endif

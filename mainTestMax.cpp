@@ -13,8 +13,8 @@ int testhandler(std::string paramUrl, json::value dataIn, json::value &dataOut)
 
 int main(void)
 {	
-	ServiceP2P s("25565");
-	s.myIpAddr = "192.168.1.16";
+	ServiceP2P s("8080");
+	//s.myIpAddr = "192.168.1.16";
 	
 	s.WaitGetFile(&testhandler);
 

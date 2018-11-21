@@ -233,7 +233,7 @@ void ServiceP2P::UnregisterPeer(std::string dest, std::string url)
 	RequestHttp(dest,method,path,body);
 }
 
-void ServiceP2P::WaitPeerList(int fctTraitement(std::string, json::value, json::value&))
+void ServiceP2P::WaitGetPeerList(int fctTraitement(std::string, json::value, json::value&))
 {
 	string_t path = "http://0.0.0.0:" +this->myPort_t +"/peers";
 
@@ -249,7 +249,7 @@ void ServiceP2P::WaitPeerList(int fctTraitement(std::string, json::value, json::
 	serverListeners.push_back(myListener);
 }
 
-void ServiceP2P::WaitFileList(int fctTraitement(std::string, json::value, json::value&))
+void ServiceP2P::WaitGetFileList(int fctTraitement(std::string, json::value, json::value&))
 {
 	string_t path = "http://0.0.0.0:" +this->myPort_t +"/files";
 
@@ -340,6 +340,91 @@ void ServiceP2P::CloseAllWaitServer()
 	for(std::vector<http_listener*>::iterator it = this->serverListeners.begin() ; it != this->clientListeners.end(); ++it)
 		delete *it;
 }
+
+json::value ServiceP2P::FileToJson(File file)
+{
+	json::value jret;
+
+	jret["id"] = json::value::string(file.id);
+	jret["name"] = json::value::string(file.name);
+	jret["size"] = file.size;
+
+	return jret;
+}
+
+json::value ServiceP2P::ListFileToJson(std::vector<File> fileList)
+{
+	if(fileList.size() <= 0)
+		return json::value();
+
+	json::value jret;
+	jret["size"] = fileList.size();
+
+	int cpt;
+	std::vector<File>::iterator it;
+	json::value jfileList = json::value::array();
+	for(it = fileList.begin(), cpt = 0 ; it != fileList.end(); ++it, ++cpt )
+	{
+		jfileList[cpt] = FileToJson(*it);
+	}
+	jret["fileList"] = jfileList;
+
+	return jret;
+}
+
+json::value ServiceP2P::PeerToJson(Peer peer)
+{
+	json::value jret;
+	jret["url"] = json::value::string(peer.url);
+	jret["name"] = json::value::string(peer.name);
+	jret["fileList"] = ListFileToJson(peer.fileList);
+
+	return jret;
+}
+
+json::value ServiceP2P::ListPeerToJson(std::vector<Peer> peerList)
+{
+	if(peerList.size() <= 0)
+		return json::value();
+
+	json::value jret;
+	jret["size"] = peerList.size();
+
+	int cpt ;
+	std::vector<Peer>::iterator it;
+	json::value jpeerList = json::value::array();
+	for(it = peerList.begin(), cpt = 0 ; it != peerList.end(); ++it, ++cpt )
+	{
+		jpeerList[cpt] = PeerToJson(*it);
+	}
+	jret["fileList"] = jpeerList;
+
+	return jret;
+}
+
+/*
+File ServiceP2P::JsonToFile(json::value val)
+{
+
+}
+
+std::vector<File> ServiceP2P::JsonToListFile(json::value val)
+{
+
+}
+
+Peer ServiceP2P::JsonToPeer(json::value val)
+{
+
+}
+
+std::vector<Peer> ServiceP2P::JsonToListPeer(json::value val)
+{
+
+}
+*/
+
+
 
 
 std::string ServiceP2P::getIPAddress()
