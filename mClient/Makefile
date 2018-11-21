@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-O2 -Wall 
-LIBS=
+LIBS=-std=c++11 -std=gnu++11 -lcpprest
 
 FILES=client.o
 

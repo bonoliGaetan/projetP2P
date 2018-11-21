@@ -5,8 +5,12 @@
 #include<vector>
 #include<fstream>
 #include<map>
+#include<cpprest/json.h>
+
 
 #include"../mDataClass/peer.h"
+
+using namespace web;
 
 class Client
 {
@@ -24,5 +28,17 @@ class Client
 	std::map<std::string,std::string> get_liste_option(); // getter
 	void init_liste_option(); // lis le fichier de la liste des option
 	void changer_liste_option(std::string nomOption,std::string nouvelleValeur);
+	
+	void json_vers_fichier(json::value fichier);
+	void json_vers_pair(json::value fichier);
+	
+	void json_vers_liste_pair(json::value fichier);
+	void json_vers_liste_fichier(json::value fichier);
+	
+	void ajouter_liste_fichier();
+	void ajouter_liste_pair();
+	
+	void ajouter_pair();
+	void ajouter_fichier();
 };
 #endif
