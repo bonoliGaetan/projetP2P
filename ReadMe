@@ -1,0 +1,28 @@
+Script lancable que sous linux : getExeZip.sh
+---------------------------------------------
+
+Pour obtenir l'application sous linux :
+
+./getExeZip.sh linux
+
+Ce script génère un zip avec :
+un exécutable : peer.exe (application)
+un script d'initialisation de la config de l'application : initConfigLinux.sh
+>> le script à lancer avant l'exécution de l'application
+
+
+Pour obtenir l'application sous windows :
+
+./getExeZip.sh windows
+
+Ce script génère un zip avec :
+un exécutable : peer.exe (application)
+un script d'initialisation de la config de l'application : initConfigWindows.sh
+>> le script à lancer avant l'exécution de l'application
+
+
+Les intéractions entre peers ne fonctionnent que en local
+Pour démarer un connexion avec un autre peer, avant lancement de l'application, 
+lancer le script initConfig<OS>.sh avec l'adresse local du 2e peer en paramètre.
+
+
