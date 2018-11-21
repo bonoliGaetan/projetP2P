@@ -10,7 +10,7 @@
 
 #include"../mDataClass/peer.h"
 
-using namespace web;
+using namespace web::json;
 
 class Client
 {

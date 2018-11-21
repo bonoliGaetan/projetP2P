@@ -85,7 +85,7 @@ void Client::json_vers_fichier(json::value fichier)
 	std::cout<<a<<std::endl<<b<<std::endl<<c<<std::endl<<d<<std::endl;
 }
 
-void Client::ajouter_liste_fichier()
+/*void Client::ajouter_liste_fichier()
 {
 	json::value entree;
 	json::value sortie;
@@ -145,7 +145,7 @@ void Client::supprimer_pair()
 	}
 	
 	
-}
+}*/
 
 
 
