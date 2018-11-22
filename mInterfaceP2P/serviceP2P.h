@@ -41,7 +41,7 @@ class ServiceP2P
 {
 public:
 
-	ServiceP2P(std::string port);
+	ServiceP2P(std::string port, std::string addr);
 	~ServiceP2P();
 
 	StError lastError;
@@ -61,6 +61,9 @@ public:
 	Peer JsonToPeer(json::value peer);
 	std::vector<Peer> JsonToListPeer(json::value peerList);
 
+	int GetJsonInt(json::value jval, string_t key);
+	std::string GetJsonString(json::value jval, string_t key);
+
 	// CLIENT
 	std::vector<Peer> GetPeerList(std::string dest);
 	std::vector<File> GetFileList(std::string dest);
@@ -68,19 +71,18 @@ public:
 	
 	void DeleteFile(std::string dest, std::string id);
 
-	std::string SaveFile(std::string dest, File file);
+	void SaveFile(std::string dest, File file);
 
 	void UpdateFile(std::string dest, File file);
 
+	void RegisterPeer(std::string dest, std::string url);
+	void UnregisterPeer(std::string dest, std::string url);
+	
+	// SERVEUR
+	
 	// foncTraitement : int <nomfct>(std::string paramUrl, json::value dataIn, json::value &dataOut);
 	void WaitRegister(int fctTraitement(std::string, json::value, json::value&));
 	void WaitUnregister(int fctTraitement(std::string, json::value, json::value&));
-
-	void CloseAllWaitClient();
-	
-	// SERVEUR
-	void RegisterPeer(std::string dest, std::string url);
-	void UnregisterPeer(std::string dest, std::string url);
 
 	void WaitGetPeerList(int fctTraitement(std::string, json::value, json::value&));
 	void WaitGetFileList(int fctTraitement(std::string, json::value, json::value&));
@@ -100,7 +102,6 @@ protected:
 	string_t myPort_t;
 	std::string getIPAddress();
 
-	std::vector<http_listener*> clientListeners;
 	std::vector<http_listener*> serverListeners;
 
 	json::value RequestHttp(std::string pdest,std::string pmethod, std::string ppath, json::value pbody);

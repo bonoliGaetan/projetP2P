@@ -7,6 +7,7 @@ echo "Ip_init_Serveur = ${1}" >> listeOption.txt
 echo 'Ip_address_client = ${ADDR}'
 echo "Port_min = 5000" >> listeOption.txt
 echo "Port_max = 5010" >> listeOption.txt
+echo 'Nom == ${2} "'>> listeOption.txt
 
 
 
