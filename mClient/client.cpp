@@ -67,56 +67,6 @@ std::map<std::string,std::string> Client::get_liste_option()
 	return listeOption;
 }
 
-void Client::ajouter_liste_fichier()
-{
-	WaitGetFileList(int obtenir_liste_fichier(std::string, json::value, json::value&));
-}
 
-void Client::ajouter_liste_pair()
-{
-	WaitGetPeerList(int obtenir_liste_pair(std::string, json::value, json::value&));
-}
-
-void Client::ajouter_pair()
-{
-	WaitRegister(int enregistrement(std::string, json::value, json::value&));
-}
-
-void Client::supprimer_pair()
-{
-	WaitUnregister(int desenregistrement(std::string, json::value, json::value&));
-}
-
-int Client::obtenir_liste_fichier(std::string param, json::value entree, json::value& sortie)
-{
-	// On envoit la liste des meta donnees
-	sortie = liste_fichier_vers_json(listeFichier);
-}
-
-int Client::obtenir_liste_pair(std::string param, json::value entree, json::value& sortie)
-{
-	// On envoit la liste des pair
-	sortie = liste_pair_vers_json(listePaire);
-}
-
-int Client::enregistrement(std::string param, json::value entree, json::value& sortie)
-{
-	// On ajoute un pair a notre liste de pair
-	Peer nouvPaire = json_vers_pair(entree);
-	listePaire.push_bock(nouvPaire);
-}
-
-int Client::desenregistrement(std::string urlPair, json::value entree, json::value& sortie)
-{
-	// On supprime un pair de notre liste de pair
-	for(int i = 0; i < listePaire.size(); i++)
-	{
-		if(listePair[i].url == urlPair)
-		{
-			listePaire.erase(i);
-			break;
-		}
-	}
-}
 
 

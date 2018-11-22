@@ -49,8 +49,6 @@ class Client
 	void ajouter_pair();
 	void ajouter_fichier();
 	
-	int obtenir_liste_fichier(std::string, json::value, json::value&);
-	int obtenir_liste_pair(std::string param, json::value entree, json::value& sortie);
 	int enregistrement(std::string param, json::value entree, json::value& sortie);
 	int desenregistrement(std::string urlPair, json::value entree, json::value& sortie);
 };
