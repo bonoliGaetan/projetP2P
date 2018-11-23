@@ -72,7 +72,20 @@ int Serveur::donner_fichier(std::string nomFichier, json::value entree, json::va
 		}
 	}
 	
-	sortie["body"] = fichier;
+	char* buffer;
+	
+	try
+	{
+		fichier.read(buffer,lenght);
+		std::string contenu = buffer.c_str();
+	}
+	catch(std::exception e)
+	{
+		cout<<"Fichier trop gros"<<endl;
+		return 0;
+	}
+	
+	sortie["body"] = utility::conversions::to_string_t(contenu);
 	
 }
 
@@ -109,6 +122,30 @@ void Serveur::enregistrer_fichier()
 int Serveur::sauvegarder_fichier(std::string param, json::value entree, json::value& sortie)
 {
 	File fichier = JsonToFile(entree);
+	
+	int max = 0;
+	int actu;
+	
+	if(listeFichier.empty())
+	{
+		fichier.id = "0";
+	}
+	else
+	{
+		for(int i = 0; i < listeFichier.size(); i++)
+		{
+			actu = std::stoi(listeFichier[i].id,nullptr,10);
+			
+			if(actu > max)
+			{
+				max = actu;
+			}
+		}
+		
+		std::string nouvId = std::to_string(max + 1);
+		
+		fichier.id = nouvId;
+	}
 	listeFichier.push_back(fichier);
 }
 
