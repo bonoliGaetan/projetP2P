@@ -13,18 +13,14 @@ StError new_StError()
 	return ret;
 }
 
-ServiceP2P::ServiceP2P(std::string port, std::string addr)
+ServiceP2P::ServiceP2P(ConfigPeer &pcf)
 {
 	this->lastError = new_StError();
 	this->serverListeners.empty();
+	this->cf = pcf;
 
-	this->myIpAddr = addr;
-	this->localhost = LOCALHOST;
-	this->myPort = port;
-
-	this->myIpAddr_t = utility::conversions::to_string_t(myIpAddr);
-	this->localhost_t = utility::conversions::to_string_t(localhost);
-	this->myPort_t = utility::conversions::to_string_t(myPort);
+	this->myIpAddr_t = utility::conversions::to_string_t(cf.myAddress);
+	this->myPort_t = utility::conversions::to_string_t(cf.myPort);
 
 	std::ofstream logFile(HTTPLOGS,std::ios::trunc);
 	logFile << "";
@@ -33,7 +29,7 @@ ServiceP2P::ServiceP2P(std::string port, std::string addr)
 
 ServiceP2P::~ServiceP2P() {}
 
-json::value ServiceP2P::RequestHttp(std::string pdest,std::string pmethod, std::string ppath, json::value pbody)
+json::value ServiceP2P::RequestHttp(std::string pdest,std::string pmethod, std::string ppath, json::value &pbody)
 {
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 
@@ -50,8 +46,6 @@ json::value ServiceP2P::RequestHttp(std::string pdest,std::string pmethod, std::
 		json::value rep = http_client(dest).request(method,path,pbody)
 		.then([](http_response response) 
 		{	
-			
-
 			return response.extract_json();
 		})
 		.get();
@@ -78,7 +72,7 @@ std::vector<Peer> ServiceP2P::GetPeerList(std::string dest)
 	std::string method("GET");
 	json::value body = json::value();
 
-	json::value response = RequestHttp(dest,method,path,body);
+	json::value response = RequestHttp("http://"+dest,method,path,body);
 
 	return JsonToListPeer(response);
 }
@@ -90,7 +84,7 @@ std::vector<File> ServiceP2P::GetFileList(std::string dest)
 	std::string method("GET");
 	json::value body = json::value();
 
-	json::value response = RequestHttp(dest,method,path,body);
+	json::value response = RequestHttp("http://"+dest,method,path,body);
 
 	return JsonToListFile(response);
 }
@@ -101,11 +95,25 @@ File ServiceP2P::GetFile(std::string dest, std::string id)
 	std::string method("GET");
 	json::value body = json::value();
 
-	json::value response = RequestHttp(dest,method,path,body);
+	json::value response = RequestHttp("http://"+dest,method,path,body);
 
-	// TODO : contenu fichier : json to File
+	File fret;
+	try {
+		fret.id = "-1";
+		fret.size = GetJsonInt(response,"size");
+		fret.body = REPTMP +id +"_" +std::to_string(fret.size);
+		
+		std::ofstream sfile(fret.body,std::ios::out);
+	   	sfile << GetJsonString(response,"body");
+	    sfile.close();
 
-	return File();
+	}catch(std::ofstream::failure ioe)
+	{
+		std::cerr << "Erreur d'écriture du fichier : " << fret.body << std::endl;
+		return File();
+	}
+
+	return fret;
 }
 
 void ServiceP2P::DeleteFile(std::string dest, std::string id)
@@ -114,7 +122,7 @@ void ServiceP2P::DeleteFile(std::string dest, std::string id)
 	std::string method("DELETE");
 	json::value body = json::value();
 
-	RequestHttp(dest,method,path,body);
+	RequestHttp("http://"+dest,method,path,body);
 }
 
 void ServiceP2P::SaveFile(std::string dest, File file)
@@ -123,7 +131,7 @@ void ServiceP2P::SaveFile(std::string dest, File file)
 	std::string method("POST");
 	json::value body = FileToJson(file);
 
-	json::value response = RequestHttp(dest,method,path,body);
+	json::value response = RequestHttp("http://"+dest,method,path,body);
 
 	file.id = GetJsonString(response,"id");
 
@@ -134,9 +142,31 @@ void ServiceP2P::UpdateFile(std::string dest, File file)
 {
 	std::string path("/files/" + file.id);
 	std::string method("POST");
-	json::value body = json::value(); // TODO contenu fichier : File to json
+	json::value body;
+	try {
+		std::ifstream sfile(file.body,std::ios::in);
+	    
+	    sfile.seekg (0, sfile.end);
+	    int length = sfile.tellg();
+	    sfile.seekg (0, sfile.beg);
 
-	RequestHttp(dest,method,path,body);
+	    char * buffer = new char [length];
+
+	    sfile.read (buffer,length);
+	    sfile.close();
+ 
+ 		body["size"] = length;
+	    body["body"] = json::value::string(buffer);
+
+	    delete[] buffer;
+
+	}catch(std::ifstream::failure ioe)
+	{
+		std::cerr << "Erreur de lecture du fichier : " << file.body << std::endl;
+		return;
+	}
+
+	RequestHttp("http://"+dest,method,path,body);
 }
 
 void ServiceP2P::WaitUnregister(int fctTraitement(std::string,json::value, json::value&))
@@ -181,7 +211,7 @@ void ServiceP2P::SetListenerMethod(http_listener &plistener, string_t pmethod, i
 		json::value dataOut = json::value();
 
 		std::ofstream logFile(HTTPLOGS,std::ios::app);
-		logFile << "Serveur:Recu/" << paramUrl << std::endl <<  dataIn.serialize() << std::endl;
+		logFile << "Serveur:Recu:" << paramUrl << std::endl <<  dataIn.serialize() << std::endl;
 		logFile.close();
 
 		fctTraitement(paramUrl,dataIn,dataOut);
@@ -209,7 +239,7 @@ void ServiceP2P::RegisterPeer(std::string dest, std::string url)
 	json::value body;
 	body["url"] = json::value::string(url); 
 
-	RequestHttp(dest,method,path,body);
+	RequestHttp("http://"+dest,method,path,body);
 }
 
 void ServiceP2P::UnregisterPeer(std::string dest, std::string url)
@@ -219,7 +249,7 @@ void ServiceP2P::UnregisterPeer(std::string dest, std::string url)
 	json::value body;
 	body["url"] = json::value::string(url);  
 
-	RequestHttp(dest,method,path,body);
+	RequestHttp("http://"+dest,method,path,body);
 }
 
 void ServiceP2P::WaitGetPeerList(int fctTraitement(std::string, json::value, json::value&))
@@ -435,31 +465,6 @@ std::vector<Peer> ServiceP2P::JsonToListPeer(json::value val)
 
 	return lpret;
 }
-
-int ServiceP2P::GetJsonInt(json::value jval, string_t key)
-{
-	int ret;
-	try {
-		ret = jval.at(key).as_integer();
-	}catch(json::json_exception je) {
-		ret = 0;
-	} 
-	return ret;
-}
-
-std::string ServiceP2P::GetJsonString(json::value jval, string_t key)
-{
-	string_t ret_t;
-	std::string ret;
-	try {
-		ret_t = jval.at(key).as_string();
-		ret = utility::conversions::to_utf8string(ret_t);
-	}catch(json::json_exception je) {
-		ret = "";
-	} 
-	return ret;
-}
-
 
 std::string ServiceP2P::getIPAddress()
 {

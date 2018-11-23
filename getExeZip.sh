@@ -1,19 +1,39 @@
-if [ $1 = "linux" ] 
+OSSYS=
+ZIP=""
+if [ $# = 1 ]
 then
-	mkdir appLinuxDir
+	OSSYS="${1}"
+else
+	OSSYS="linux"
+fi
+
+if [ ${OSSYS} = "linux" ] 
+then
+	if ! test -d appLinuxDir
+	then
+		mkdir appLinuxDir
+	else
+		rm -f appLinuxDir/*.exe appLinuxDir/*.sh
+	fi
+
 	cp scripts/initConfigLinux.sh appLinuxDir/
 
-	make clean appliLinux
+	
+	make clean appliLinux OS=linux
 	cp appliLinux.exe appLinuxDir/
 
-	tar cfzv appLinux.zip appLinuxDir
+	if [ ${ZIP} = "TRUE" ]
+	then
+		tar cfzv appLinux.zip appLinuxDir
+		rm -rf appLinuxDir
+	fi
 
 	make clean
-	rm -rf appLinuxDir
-elif [ $1 = "windows" ]
+	
+elif [ ${OSSYS} = "windows" ]
 then
 
-
+	cd .
 
 fi
 

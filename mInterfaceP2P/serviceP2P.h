@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib>
 
 // Include REST API
 
@@ -24,10 +25,17 @@ using namespace concurrency::streams;       	// Asynchronous streams
 
 #include "../mDataClass/file.h"
 #include "../mDataClass/peer.h"
+#include "../mDataClass/configPeer.h"
 
 #define LOCALHOST 	"localhost"
-#define HTTPLOGS	"httplogs.txt"
 
+#if __OPSYS == linux
+	#define HTTPLOGS	"logs/httplogs.txt"
+	#define REPTMP		"tmpP2P/"
+#elif __OPSYS == windows
+	#define HTTPLOGS	"logs\\httplogs.txt"
+	#define REPTMP		"tmpP2P\\"
+#endif
 typedef struct
 {
 	int code;
@@ -41,13 +49,11 @@ class ServiceP2P
 {
 public:
 
-	ServiceP2P(std::string port, std::string addr);
+	ServiceP2P(ConfigPeer &pcf);
 	~ServiceP2P();
 
 	StError lastError;
-	std::string myIpAddr;
-	std::string localhost;
-	std::string myPort;
+	ConfigPeer cf;
 
 	// JSON
 
@@ -60,9 +66,6 @@ public:
 	std::vector<File> JsonToListFile(json::value fileList);
 	Peer JsonToPeer(json::value peer);
 	std::vector<Peer> JsonToListPeer(json::value peerList);
-
-	int GetJsonInt(json::value jval, string_t key);
-	std::string GetJsonString(json::value jval, string_t key);
 
 	// CLIENT
 	std::vector<Peer> GetPeerList(std::string dest);
@@ -98,13 +101,13 @@ public:
 protected:
 
 	string_t myIpAddr_t;
-	string_t localhost_t;
 	string_t myPort_t;
+
 	std::string getIPAddress();
 
 	std::vector<http_listener*> serverListeners;
 
-	json::value RequestHttp(std::string pdest,std::string pmethod, std::string ppath, json::value pbody);
+	json::value RequestHttp(std::string pdest,std::string pmethod, std::string ppath, json::value &pbody);
 	
 	void SetListenerMethod(http_listener &plistener, string_t pmethod, int fctTraitement(std::string, json::value,json::value&));
 
