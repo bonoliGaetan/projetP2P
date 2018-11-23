@@ -92,7 +92,7 @@ std::vector<File> ServiceP2P::GetFileList(std::string dest)
 
 	json::value response = RequestHttp(dest,method,path,body);
 
-	return JsontToListFile(response);
+	return JsonToListFile(response);
 }
 
 File ServiceP2P::GetFile(std::string dest, std::string id)
@@ -128,8 +128,6 @@ void ServiceP2P::SaveFile(std::string dest, File file)
 	file.id = GetJsonString(response,"id");
 
 	UpdateFile(dest,file);
-
-	return file.id;
 }
 
 void ServiceP2P::UpdateFile(std::string dest, File file)

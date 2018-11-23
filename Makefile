@@ -1,20 +1,20 @@
 CC=g++
 CFLAGS=-O2 -Wall 
 LIBS= -lboost_system -lcrypto -lssl -lcpprest -std=c++11 -std=gnu++11
-CLIENTLIST=mInterfaceP2P.o mDataClass.o mClient.o
-SERVEURLIST=mInterfaceP2P.o mServeurMain.o mDataClass.o
+
+APPLILIST=mInterfaceP2P.o mDataClass.o mClient.o  
 
 TESTLISTMAX=mInterfaceP2P.o mDataClass.o
 TESTLISTGAE=mClient.o mDataClass.o
 TESTLISTALE=
 
-all: clean client server 
+all: clean appliLinux appliWindows
 
-client: $(CLIENTLIST)
-	$(CC) $(FLAGS) -o client.exe $^ $(LIBS)
+appliLinux: $(APPLILIST) main.cpp
+	$(CC) $(FLAGS) -o appliLinux.exe $^ $(LIBS) -D__OPSYS=linux
 
-serveur: $(SERVEURLIST)
-	$(CC) $(FLAGS) -o serveur.exe $^ $(LIBS)
+appliWindows: $(APPLILIST) main.cpp
+	$(CC) $(FLAGS) -o appliWindows.exe $^ $(LIBS) -D__OPSYS=windows
 
 testmax: $(TESTLISTMAX) mainTestMax.cpp
 	$(CC) $(FLAGS) -o testmax.exe $^ $(LIBS)
@@ -26,9 +26,11 @@ testale: $(TESTLISTALE) mainTestAle.cpp
 	$(CC) $(FLAGS) -o testale.exe $^ $(LIBS)
 
 %.o:
-	./scripts/make.sh $(PWD)/$(*) $(PWD) all
+	make $(*).o -C $(*) 
 
 clean:
-	rm -f client.exe serveur.exe test*.exe
+	rm -f *.exe
 	rm -f *.o
+	rm -f */*.o
+
 

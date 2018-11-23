@@ -1,17 +1,17 @@
-if $1 -eq "linux"
-	mkdir applinux
-	cp scripts/initConfigLinux.sh applinux/
+if [ $1 = "linux" ] 
+then
+	mkdir appLinuxDir
+	cp scripts/initConfigLinux.sh appLinuxDir/
 
-	make clean client server
-	cp client.exe appLinux/
-	cp server.exe appLinux/
+	make clean appliLinux
+	cp appliLinux.exe appLinuxDir/
 
-	zip -r appLinux
+	tar cfzv appLinux.zip appLinuxDir
 
 	make clean
-elif $1 -eq "windows"
-
-
+	rm -rf appLinuxDir
+elif [ $1 = "windows" ]
+then
 
 
 
