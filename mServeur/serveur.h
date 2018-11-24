@@ -3,7 +3,7 @@
 #include<iostream>
 #include<string>
 #include<stdio.h>
-#include"../mInterfaceP2P/service.h"
+#include"../mInterfaceP2P/serviceP2P.h"
 #include"../mDataClass/configPeer.h"
 
 class Serveur
