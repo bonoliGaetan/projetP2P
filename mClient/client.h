@@ -6,7 +6,7 @@
 #include<fstream>
 #include<map>
 #include<cpprest/json.h>
-#include"../mInterfaceP2P/service.h"
+#include"../mInterfaceP2P/serviceP2P.h"
 #include"../mDataClass/configPeer.h"
 
 #include"../mDataClass/peer.h"
