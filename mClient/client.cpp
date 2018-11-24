@@ -108,3 +108,15 @@ void Client::desenregistrer_pair_client(std::string dest, std::string url)
 	serviceP2P.UnregisterPeer(dest, url);
 }
 
+std::vector<File> Client::obtenir_liste_fichier_d_un_pair(std::string url)
+{
+	for(int i = 0; i < listePair.size(); i++)
+	{
+		if(listePair[i].url == url)
+		{
+			return listePaire[i].fileList;
+		}
+	}
+}
+
+

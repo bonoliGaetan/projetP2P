@@ -39,5 +39,7 @@ class Client
 	void enregistrer_pair_client(std::string dest, std::string url);
 	void desenregistrer_pair_client(std::string dest, std::string url);
 	void maj_fichier_client(std::string dest, File file);
+	
+	std::vector<File> obtenir_liste_fichier_d_un_pair(std::string url);
 };
 #endif
