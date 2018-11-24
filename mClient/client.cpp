@@ -27,33 +27,13 @@ void Client::obtenir_liste_pair_client(std::string dest)
 void Client::obtenir_liste_fichier_client(std::string dest)
 {
 	std::vector<File> liste = serviceP2P.GetFileList(dest);
-	int idDepart;
-	int max = 0;
-	int actu;
 	
-	if(listeFichier.empty())
+	for(unsigned int i = 0; i < listePair.size(); i++)
 	{
-		idDepart = 0;
-	}
-	else
-	{
-		for(unsigned int i = 0; i < listeFichier.size(); i++)
+		if(listePair[i].url == dest)
 		{
-			actu = std::stoi(listeFichier[i].id,nullptr,10);
-			
-			if(actu > max)
-			{
-				max = actu;
-			}
+			listePair[i].fileList = liste;
 		}
-		
-		idDepart = max + 1;
-	}
-	
-	for(unsigned int i = 0; i < liste.size(); i++)
-	{
-		liste[i].id = std::to_string(max++);
-		listePair.push_back(liste[i]);
 	}
 }
 
@@ -72,14 +52,14 @@ void Client::obtenir_fichier_client(std::string dest, std::string id)
 	fic.read (buffer,length);
 	fic.close();
 	
-	std::ofstream fichier(configuration.repClient,std::ios::out);
-	fichier << std::string(buffer);
-	fichier.close();
+	std::ofstream nouvFichier(configuration.repClient,std::ios::out);
+	nouvFichier << std::string(buffer);
+	nouvFichier.close();
 }
 
 void Client::supprimer_fichier_client(std::string dest,std::string id)
 {
-	serviceP2P.DeleteFile(std::string dest, std::string id);
+	serviceP2P.DeleteFile(dest,id);
 	
 	std::vector<File> nouvListe = serviceP2P.GetFileList(dest);
 	
@@ -90,17 +70,18 @@ void Client::supprimer_fichier_client(std::string dest,std::string id)
 	{
 		if(listePair[i].url == id)
 		{
-			listePair[j].fileList = nouvListe;
+			listePair[i].fileList = nouvListe;
+			j = i;
 			break;
 		}
 	}
 	
-	for(int i = 0; i < listePair[j].listeFichier.size(); i++)
+	for(unsigned int i = 0; i < listePair[j].fileList.size(); i++)
 	{
-		if(listePair[j].listeFichier[i].id == id)
+		if(listePair[j].fileList[i].id == id)
 		{
-			nomFichier = listePair[j].listeFichier[i].name;
-			listePair[j].listeFichier.erase(i);
+			nomFichier = listePair[j].fileList[i].name;
+			listePair[j].fileList.erase(listePair[j].fileList.begin()+i);
 		}
 	}
 	
@@ -109,21 +90,21 @@ void Client::supprimer_fichier_client(std::string dest,std::string id)
 
 void Client::sauvegarder_fichier_client(std::string dest, File file)
 {
-	serviceP2P.SaveFile(std::string dest, File file);
+	serviceP2P.SaveFile(dest,file);
 }
 
 void Client::maj_fichier_client(std::string dest, File file)
 {
-	serviceP2P.UpdateFile(std::string dest, File file);
+	serviceP2P.UpdateFile(dest,file);
 }
 
 void Client::enregistrer_pair_client(std::string dest, std::string url)
 {
-	serviceP2P.RegisterPeer(std::string dest, std::string url);
+	serviceP2P.RegisterPeer(dest, url);
 }
 
 void Client::desenregistrer_pair_client(std::string dest, std::string url)
 {
-	serviceP2P.UnregisterPeer(std::string dest, std::string url);
+	serviceP2P.UnregisterPeer(dest, url);
 }
 
