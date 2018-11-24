@@ -3,19 +3,21 @@
 #include "serviceP2P.h"
 
 
-StError new_StError()
+StError new_StError(int c, std::string s)
 {
 	StError ret;
-	ret.code = 0;
+	ret.code = c;
 	ret.codeString = std::string();
-	ret.message = std::string();
+	ret.message = s;
 
 	return ret;
 }
 
+ServiceP2P::ServiceP2P() {}
+
 ServiceP2P::ServiceP2P(ConfigPeer &pcf)
 {
-	this->lastError = new_StError();
+	this->lastResponse = new_StError(0,"");
 	this->serverListeners.empty();
 	this->cf = pcf;
 
@@ -44,8 +46,10 @@ json::value ServiceP2P::RequestHttp(std::string pdest,std::string pmethod, std::
 
 	try {
 		json::value rep = http_client(dest).request(method,path,pbody)
-		.then([](http_response response) 
+		.then([=](http_response response) 
 		{	
+			
+			lastResponse = new_StError(response.status_code(),response.reason_phrase());
 			return response.extract_json();
 		})
 		.get();
@@ -61,6 +65,7 @@ json::value ServiceP2P::RequestHttp(std::string pdest,std::string pmethod, std::
 		logFile.open(HTTPLOGS,std::ios::app);
 		logFile << "Erreur: " << e.what() << std::endl;
 		logFile.close();
+		this->lastResponse = new_StError(-1,e.what());
 	} 
 
 	return json::value();
@@ -203,32 +208,37 @@ void ServiceP2P::WaitRegister(int fctTraitement(std::string,json::value,json::va
 
 void ServiceP2P::SetListenerMethod(http_listener &plistener, string_t pmethod, int fctTraitement(std::string,json::value,json::value&))
 {
-	plistener.support(pmethod, [=] (http_request req) {
-		
-		std::string paramUrl = req.relative_uri().to_string();
+	try {
+		plistener.support(pmethod, [=] (http_request req) {
+			
+			std::string paramUrl = req.relative_uri().to_string();
 
-		json::value dataIn = req.extract_json().get();
-		json::value dataOut = json::value();
+			json::value dataIn = req.extract_json().get();
+			json::value dataOut = json::value();
 
-		std::ofstream logFile(HTTPLOGS,std::ios::app);
-		logFile << "Serveur:Recu:" << paramUrl << std::endl <<  dataIn.serialize() << std::endl;
-		logFile.close();
-
-		fctTraitement(paramUrl,dataIn,dataOut);
-
-		logFile.open(HTTPLOGS,std::ios::app);
-		logFile <<"Serveur:Renvoyer\n" << dataOut.serialize() << std::endl;
-		logFile.close();
-		try {
-			req.reply(status_codes::OK,dataOut);
-		}catch(http_exception e)
-		{
-			logFile.open(HTTPLOGS,std::ios::app);
-			logFile << "Erreur: " << e.what() << std::endl;
+			std::ofstream logFile(HTTPLOGS,std::ios::app);
+			logFile << "Serveur:Recu:" << paramUrl << std::endl <<  dataIn.serialize() << std::endl;
 			logFile.close();
-		}
-		
-	});
+
+			fctTraitement(paramUrl,dataIn,dataOut);
+
+			logFile.open(HTTPLOGS,std::ios::app);
+			logFile <<"Serveur:Renvoyer\n" << dataOut.serialize() << std::endl;
+			logFile.close();
+			try {
+				req.reply(status_codes::OK,dataOut);
+			}catch(http_exception e)
+			{
+				logFile.open(HTTPLOGS,std::ios::app);
+				logFile << "Erreur: " << e.what() << std::endl;
+				logFile.close();
+			}
+			
+		});
+	} catch(http_listener::http_exception he)
+	{
+		std::cout << he.what() << std::endl;
+	}
 
 }
 

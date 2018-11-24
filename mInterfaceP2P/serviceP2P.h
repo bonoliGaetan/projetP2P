@@ -43,16 +43,17 @@ typedef struct
 	std::string message;
 }StError;
 
-StError new_StError();
+StError new_StError(int,std::string);
 
 class ServiceP2P 
 {
 public:
 
 	ServiceP2P(ConfigPeer &pcf);
+	ServiceP2P();
 	~ServiceP2P();
 
-	StError lastError;
+	StError lastResponse;
 	ConfigPeer cf;
 
 	// JSON

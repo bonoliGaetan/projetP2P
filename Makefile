@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-O2 -Wall 
 LIBS= -lboost_system -lcrypto -lssl -lcpprest -std=c++11 -std=gnu++11
-export OS
+OS=
 
 APPLILIST=mInterfaceP2P.o mDataClass.o
 

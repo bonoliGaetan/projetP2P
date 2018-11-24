@@ -21,7 +21,7 @@ using namespace utility;
 #define REPC "Repertoire_Client"
 #define REPS "Repertoire_Server"
 #define TMAX "Taille_max_repertoire_Serveur"
-#define IPIN "Ip_init_Server"
+#define IPIN "Ip_init_Serveur"
 #define MYIP "Ip_address_client"
 #define MINP "Port_min"
 #define MAXP "Port_max"
@@ -51,6 +51,7 @@ public:
 	int minPort;
 
 	json::value GetJsonFromFile(std::string file);
+	void affData();
 };
 
 #endif

@@ -28,7 +28,23 @@ ConfigPeer::ConfigPeer(std::string file)
 }
 ConfigPeer::ConfigPeer() {}
 
+void ConfigPeer::affData()
+{
+	std::string s("");
+	s += "repClient:" +this->repClient +"\n";
+	s += "repServer:" +this->repServer;
+	s += "tailleMaxRepServer:" +std::to_string(this->tailleMaxRepServer) +"\n";
+	s += "firstRegister:" +this->firstRegister +"\n";
+	s += "myAddress:" +this->myAddress +"\n";
+	s += "maxPort:" +std::to_string(this->maxPort) +"\n";
+	s += "minPort:" +std::to_string(this->minPort) +"\n";
+	s += "myName:" +this->myName +"\n";
+	s += "myUrl:" +this->myUrl +"\n";
+	s += "myPort:" +this->myPort +"\n";
 
+	std::cout << s;
+
+}
 
 json::value ConfigPeer::GetJsonFromFile(std::string file)
 {

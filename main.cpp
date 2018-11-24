@@ -17,6 +17,8 @@
 
 using namespace web::json;  
 
+std::vector<Peer> listePair;
+
 
 int testhandler(std::string paramUrl, json::value dataIn, json::value &dataOut)
 {
@@ -50,12 +52,20 @@ int testhandler(std::string paramUrl, json::value dataIn, json::value &dataOut)
 }
 
 
-int main(void)
+int main(int nbarg, char* argv[])
 {	
+	listePair = std::vector<Peer>();
+
 	ConfigPeer cf(FILECONFIG);
-	
 	ServiceP2P spp(cf);
 
+	cf.affData();
+	// TODO : S'ajouter dans la liste des pairs
+
+	//Client(cf,spp); TODO
+	//Server(cf,spp); TODO
+
+	// A SUPPR
 	spp.WaitGetFile(&testhandler);
 
 	File f;
@@ -63,7 +73,9 @@ int main(void)
 	f.name = "truc";
 	f.size = 0;
 	f.body = "config.json";
-	spp.GetFile(cf.myUrl,"config.json");
+	spp.GetFile(cf.firstRegister,"config.json");
+
+	sleep(15);
 
 	return 0;
 }
