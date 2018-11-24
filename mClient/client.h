@@ -18,17 +18,12 @@ class Client
 	std::string url;
 	std::vector<File> listeFichier;
 	ConfigPeer configuration;
+	ServiceP2P serviceP2P;
 	// TODO => fonction dans un thread qui utilise waitRequestedClient et quiva traiter les donnes recues.
 	
 	public:
 	Client();
 	~Client();
-	// MAYBY TODO => void sauvegarde_fichier(std::string chemin);
-	// TODO => La fonction qui recurpere au constructeur la liste des meta donnes
-	
-	std::map<std::string,std::string> get_liste_option(); // getter
-	void init_liste_option(); // lis le fichier de la liste des option
-	void changer_liste_option(std::string nomOption,std::string nouvelleValeur);
 	
 	File json_vers_fichier(json::value fichier);
 	Peer json_vers_pair(json::value fichier);
@@ -56,5 +51,7 @@ class Client
 	void obtenir_fichier_client();
 	void supprimer_fichier_client(std::string dest,std::string id);
 	void sauvegarder_fichier_client(std::string dest, File file);
+	void enregistrer_pair_client(std::string dest, std::string url);
+	void desenregistrer_pair_client(std::string dest, std::string url);
 };
 #endif
