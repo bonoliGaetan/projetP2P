@@ -20,7 +20,7 @@ void Client::obtenir_liste_pair_client(std::string dest)
 	
 	for(unsigned int i = 0; i < liste.size(); i++)
 	{
-		listePair.push_back(liste[i]);
+		configuration.listePair.push_back(liste[i]);
 	}
 }
 
@@ -28,11 +28,11 @@ void Client::obtenir_liste_fichier_client(std::string dest)
 {
 	std::vector<File> liste = serviceP2P.GetFileList(dest);
 	
-	for(unsigned int i = 0; i < listePair.size(); i++)
+	for(unsigned int i = 0; i < configuration.listePair.size(); i++)
 	{
-		if(listePair[i].url == dest)
+		if(configuration.listePair[i].url == dest)
 		{
-			listePair[i].fileList = liste;
+			configuration.listePair[i].fileList = liste;
 		}
 	}
 }
@@ -66,22 +66,22 @@ void Client::supprimer_fichier_client(std::string dest,std::string id)
 	std::string nomFichier;
 	int j;
 	
-	for(int i = 0; listePair.size(); i++)
+	for(int i = 0; configuration.listePair.size(); i++)
 	{
-		if(listePair[i].url == id)
+		if(configuration.listePair[i].url == id)
 		{
-			listePair[i].fileList = nouvListe;
+			configuration.listePair[i].fileList = nouvListe;
 			j = i;
 			break;
 		}
 	}
 	
-	for(unsigned int i = 0; i < listePair[j].fileList.size(); i++)
+	for(unsigned int i = 0; i < configuration.listePair[j].fileList.size(); i++)
 	{
-		if(listePair[j].fileList[i].id == id)
+		if(configuration.listePair[j].fileList[i].id == id)
 		{
-			nomFichier = listePair[j].fileList[i].name;
-			listePair[j].fileList.erase(listePair[j].fileList.begin()+i);
+			nomFichier = configuration.listePair[j].fileList[i].name;
+			configuration.listePair[j].fileList.erase(configuration.listePair[j].fileList.begin()+i);
 		}
 	}
 	
@@ -110,11 +110,11 @@ void Client::desenregistrer_pair_client(std::string dest, std::string url)
 
 std::vector<File> Client::obtenir_liste_fichier_d_un_pair(std::string url)
 {
-	for(int i = 0; i < listePair.size(); i++)
+	for(int i = 0; i < configuration.listePair.size(); i++)
 	{
-		if(listePair[i].url == url)
+		if(configuration.listePair[i].url == url)
 		{
-			return listePaire[i].fileList;
+			return configuration.listePaire[i].fileList;
 		}
 	}
 }
