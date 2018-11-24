@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-O2 -Wall 
-LIBS=`pkg-config gtkmm-3.0 --cflags --libs`
+LIBS=-std=c++11 -std=gnu++11 `pkg-config gtkmm-3.0 --cflags --libs` 
 OS=
 
 FILES=fenetre.o

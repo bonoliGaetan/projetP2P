@@ -1,41 +1,41 @@
 #ifndef SERVICEP2P_H
 #define SERVICEP2P_H
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <cstdlib>
+	#include <iostream>
+	#include <string>
+	#include <vector>
+	#include <cstdlib>
 
-// Include REST API
+	// Include REST API
 
-#include <cpprest/http_client.h>
-#include <cpprest/filestream.h>
-#include <cpprest/http_listener.h>              // HTTP server
-#include <cpprest/json.h>                       // JSON library
+	#include <cpprest/http_client.h>
+	#include <cpprest/filestream.h>
+	#include <cpprest/http_listener.h>              // HTTP server
+	#include <cpprest/json.h>                       // JSON library
 
-using namespace utility;                    	// Common utilities like string conversions
-using namespace web;                        	// Common features like URIs.
-using namespace web::http;                  	// Common HTTP functionality
-using namespace web::http::client;          	// HTTP client features
-using namespace web::http::experimental::listener;          // HTTP server
-using namespace web::json;                                  // JSON library
-using namespace concurrency::streams;       	// Asynchronous streams
+	using namespace utility;                    	// Common utilities like string conversions
+	using namespace web;                        	// Common features like URIs.
+	using namespace web::http;                  	// Common HTTP functionality
+	using namespace web::http::client;          	// HTTP client features
+	using namespace web::http::experimental::listener;          // HTTP server
+	using namespace web::json;                                  // JSON library
+	using namespace concurrency::streams;       	// Asynchronous streams
 
-// ****************
+	// ****************
 
-#include "../mDataClass/file.h"
-#include "../mDataClass/peer.h"
-#include "../mDataClass/configPeer.h"
+	#include "../mDataClass/file.h"
+	#include "../mDataClass/peer.h"
+	#include "../mDataClass/configPeer.h"
 
-#define LOCALHOST 	"localhost"
+	#define LOCALHOST 	"localhost"
 
-#if __OPSYS == linux
-	#define HTTPLOGS	"logs/httplogs.txt"
-	#define REPTMP		"tmpP2P/"
-#elif __OPSYS == windows
-	#define HTTPLOGS	"logs\\httplogs.txt"
-	#define REPTMP		"tmpP2P\\"
-#endif
+	#if __OPSYS == linux
+		#define HTTPLOGS	"logs/httplogs.txt"
+		#define REPTMP		"tmpP2P/"
+	#elif __OPSYS == windows
+		#define HTTPLOGS	"logs\\httplogs.txt"
+		#define REPTMP		"tmpP2P\\"
+	#endif
 typedef struct
 {
 	int code;

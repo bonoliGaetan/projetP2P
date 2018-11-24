@@ -25,6 +25,10 @@ ConfigPeer::ConfigPeer(std::string file)
 	this->myPort = std::to_string(iPort);
 
 	this->myUrl = myAddress +":" +myPort;
+
+	this->listePair = std::vector<Peer>();
+	this->listeFichier = std::vector<File>();
+
 }
 ConfigPeer::ConfigPeer() {}
 

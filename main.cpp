@@ -1,5 +1,6 @@
 #include "main.h"
 
+/*
 int testhandler(std::string paramUrl, json::value dataIn, json::value &dataOut)
 {
 	std::cout << paramUrl << std::endl;
@@ -30,20 +31,31 @@ int testhandler(std::string paramUrl, json::value dataIn, json::value &dataOut)
 
 	std::cout << dataOut.serialize() << std::endl;
 }
-
+*/
 
 int main(int nbarg, char* argv[])
 {	
-	listePair = std::vector<Peer>();
 
 	ConfigPeer cf(FILECONFIG);
 	ServiceP2P spp(cf);
 	Client client(cf,spp);
+	
 
-	/*Gtk::Main app(nbarg,argv);
+	File f;
+	f.id = "3";
+	f.name = "sss";
+	cf.listeFichier.push_back(f);
+
+	Peer p;
+	p.url = "55";
+	p.name = "aaa";
+	cf.listePair.push_back(p);
+
+
+	Gtk::Main app(nbarg,argv);
 	
 	Fenetre fen(client,"Salut");
-	Gtk::Main::run(fen);*/
+	Gtk::Main::run(fen);
 
 	/*
 	

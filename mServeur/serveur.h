@@ -5,8 +5,8 @@
 #include<stdio.h>
 
 #include "../main.h"
-#include"../mInterfaceP2P/serviceP2P.h"
-#include"../mDataClass/configPeer.h"
+#include "../mInterfaceP2P/serviceP2P.h"
+#include "../mDataClass/configPeer.h"
 
 class Serveur
 {

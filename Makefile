@@ -3,7 +3,7 @@ CFLAGS=-O2 -Wall
 LIBS= -lboost_system -lcrypto -lssl -lcpprest -std=c++11 -std=gnu++11 `pkg-config gtkmm-3.0 --cflags --libs`
 OS=
 
-APPLILIST= mServeur.o mClient.o mGraphique.o mInterfaceP2P.o  mDataClass.o 
+APPLILIST= mDataClass.o mClient.o mInterfaceP2P.o mGraphique.o
 
 TESTLISTMAX=mInterfaceP2P.o mDataClass.o
 TESTLISTGAE=mClient.o mDataClass.o

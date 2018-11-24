@@ -64,7 +64,7 @@ void Client::supprimer_fichier_client(std::string dest,std::string id)
 	std::vector<File> nouvListe = serviceP2P.GetFileList(dest);
 	
 	std::string nomFichier;
-	int j;
+	int j =0;
 	
 	for(int i = 0; configuration.listePair.size(); i++)
 	{
@@ -83,9 +83,7 @@ void Client::supprimer_fichier_client(std::string dest,std::string id)
 			nomFichier = configuration.listePair[j].fileList[i].name;
 			configuration.listePair[j].fileList.erase(configuration.listePair[j].fileList.begin()+i);
 		}
-	}
-	
-	
+	}	
 }
 
 void Client::sauvegarder_fichier_client(std::string dest, File file)
@@ -110,13 +108,14 @@ void Client::desenregistrer_pair_client(std::string dest, std::string url)
 
 std::vector<File> Client::obtenir_liste_fichier_d_un_pair(std::string url)
 {
-	for(int i = 0; i < configuration.listePair.size(); i++)
+	for(unsigned int i = 0; i < configuration.listePair.size(); i++)
 	{
 		if(configuration.listePair[i].url == url)
 		{
-			return configuration.listePaire[i].fileList;
+			return configuration.listePair[i].fileList;
 		}
 	}
+	return std::vector<File>();
 }
 
 

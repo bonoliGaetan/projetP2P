@@ -1,5 +1,6 @@
 #ifndef CLIENT_H
 #define CLIENT_H
+
 #include<iostream>
 #include<string>
 #include<vector>
@@ -7,11 +8,12 @@
 #include<map>
 #include<cpprest/json.h>
 
-#include "../main.h"
-#include"../mInterfaceP2P/serviceP2P.h"
-#include"../mDataClass/configPeer.h"
 
-#include"../mDataClass/peer.h"
+#include "../mInterfaceP2P/serviceP2P.h"
+#include "../mDataClass/peer.h"
+#include "../mDataClass/configPeer.h"
+#include "../main.h"
+
 
 using namespace web;
 
@@ -19,15 +21,15 @@ class Client
 {
 	private:
 	std::string url;
-	std::vector<File> listeFichier;
-	ConfigPeer configuration;
-	ServiceP2P serviceP2P;
 	
 	public:
 	Client();
 	Client(ConfigPeer &cf, ServiceP2P &spp);
 	~Client();
 	
+	ConfigPeer configuration;
+	ServiceP2P serviceP2P;
+
 	int enregistrement(std::string param, json::value entree, json::value& sortie);
 	int desenregistrement(std::string urlPair, json::value entree, json::value& sortie);
 	
@@ -42,4 +44,6 @@ class Client
 	
 	std::vector<File> obtenir_liste_fichier_d_un_pair(std::string url);
 };
+
+
 #endif

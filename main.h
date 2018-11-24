@@ -4,12 +4,19 @@
 #include <iostream>
 
 
-#include "mInterfaceP2P/serviceP2P.h"
-//#include "mClient/client.h"
+#include "mDataClass/peer.h"
+#include "mDataClass/file.h"
 #include "mDataClass/configPeer.h"
-#include "mServeur/serveur.h"
-//#include "mGraphique/fenetre.h"
 
+//#include "mInterfaceP2P/serviceP2P.h"
+#include "mGraphique/fenetre.h"
+
+//#include "mClient/client.h"
+//#include "mServeur/serveur.h"
+
+
+
+ 
 
 #define FILECONFIG "config.json"
 
@@ -19,9 +26,5 @@
 	#define SL "\\"
 #endif
 
-using namespace web::json;  
-
-std::vector<Peer> listePair;
-std::vector<File> listeFichier;
 
 #endif

@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-O2 -Wall 
-LIBS=-std=c++11 -std=gnu++11 -lcpprest
+LIBS=-std=c++11 -std=gnu++11 -lcpprest `pkg-config gtkmm-3.0 --cflags --libs`
 OS=
 
 FILES=client.o

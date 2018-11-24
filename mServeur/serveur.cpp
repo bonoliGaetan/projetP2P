@@ -25,14 +25,14 @@ Serveur::~Serveur() { }
 int Serveur::obtenir_liste_fichier(std::string param, json::value entree, json::value& sortie)
 {
 	// On envoit la liste des meta donnees
-	sortie = serviceP2P.ListFileToJson(listeFichier);
+	sortie = serviceP2P.ListFileToJson(config.listeFichier);
 	return 0;
 }
 
 int Serveur::obtenir_liste_pair(std::string param, json::value entree, json::value& sortie)
 {
 	// On envoit la liste des pair
-	sortie = serviceP2P.ListPeerToJson(listePair);
+	sortie = serviceP2P.ListPeerToJson(config.listePair);
 	return 0;
 }
 
@@ -60,18 +60,18 @@ int Serveur::enregistrement(std::string param, json::value entree, json::value& 
 {
 	// On ajoute un pair a notre liste de pair
 	Peer nouvPaire = serviceP2P.JsonToPeer(entree);
-	listePair.push_back(nouvPaire);
+	config.listePair.push_back(nouvPaire);
 	return 0;
 }
 
 int Serveur::desenregistrement(std::string urlPair, json::value entree, json::value& sortie)
 {
 	// On supprime un pair de notre liste de pair
-	for(unsigned int i = 0; i < listePair.size(); i++)
+	for(unsigned int i = 0; i < config.listePair.size(); i++)
 	{
-		if(listePair[i].url == urlPair)
+		if(config.listePair[i].url == urlPair)
 		{
-			listePair.erase(listePair.begin()+i);
+			listePair.erase(config.listePair.begin()+i);
 			break;
 		}
 	}
@@ -89,11 +89,11 @@ int Serveur::donner_fichier(std::string nomFichier, json::value entree, json::va
 	chemin = chemin  + SL + nomFichier;
 	std::ifstream fichier(chemin,std::ifstream::in);
 	
-	for(unsigned int i = 0; i < listeFichier.size(); i++)
+	for(unsigned int i = 0; i < config.listeFichier.size(); i++)
 	{
-		if(listeFichier[i].name == nomFichier)
+		if(config.listeFichier[i].name == nomFichier)
 		{
-			sortie["size"] = listeFichier[i].size;
+			sortie["size"] = config.listeFichier[i].size;
 			break;
 		}
 	}
@@ -135,11 +135,11 @@ int Serveur::supression_fichier(std::string idFichier, json::value entree, json:
 {
 	std::string nomFichier;
 	
-	for(unsigned int i = 0; i < listeFichier.size(); i++)
+	for(unsigned int i = 0; i < config.listeFichier.size(); i++)
 	{
-		if(listeFichier[i].id == idFichier)
+		if(config.listeFichier[i].id == idFichier)
 		{
-			nomFichier = listeFichier[i].name;
+			nomFichier = config.listeFichier[i].name;
 			break;
 		}
 	}
@@ -162,15 +162,15 @@ int Serveur::sauvegarder_fichier(std::string param, json::value entree, json::va
 	int max = 0;
 	int actu;
 	
-	if(listeFichier.empty())
+	if(config.listeFichier.empty())
 	{
 		fichier.id = "0";
 	}
 	else
 	{
-		for(unsigned int i = 0; i < listeFichier.size(); i++)
+		for(unsigned int i = 0; i < config.listeFichier.size(); i++)
 		{
-			actu = std::stoi(listeFichier[i].id,nullptr,10);
+			actu = std::stoi(config.listeFichier[i].id,nullptr,10);
 			
 			if(actu > max)
 			{
@@ -182,7 +182,7 @@ int Serveur::sauvegarder_fichier(std::string param, json::value entree, json::va
 		
 		fichier.id = nouvId;
 	}
-	listeFichier.push_back(fichier);
+	config.listeFichier.push_back(fichier);
 	return 0;
 }
 

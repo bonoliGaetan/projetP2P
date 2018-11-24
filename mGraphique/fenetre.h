@@ -1,14 +1,20 @@
-#ifndef DEF_FENETRE
-#define DEF_FENETRE
+#ifndef FENETRE_H
+#define FENETRE_H
 
 #include <iostream>
+#include <gtkmm.h>
 
-#include <gtkmm/main.h>
-#include <gtkmm/window.h>
-#include <gtkmm/button.h>
+#define LARGEUR 1200
+#define HAUTEUR 800
 
+#include "../main.h"
+#include "../mDataClass/peer.h"
+#include "../mDataClass/file.h"
 
 #include "../mClient/client.h"
+
+
+
 
 class Fenetre : public Gtk::Window
 {
@@ -19,21 +25,55 @@ class Fenetre : public Gtk::Window
         
 
         static void FBQuitter();
+
+        static void FBRegister();
+    	static void FBUnregister();
+    	
+    	static void FBGetPeerList(std::string peer);
+		static void FBGetFileList(std::string peer);
+
+		static void FBGetFile(std::string id);
+		static void FBSaveFile();
+		static void FBDeleteFile(std::string id);
+
+		static void PeerSelectChanged();
+
     private :
 
     	Client clt;
 
+    	void SetModel();
+
     	void SetButtons();
     	void AddButtons();
-    	void AddButton();
 
-    	Gtk::Button SetButton(std::string name, void fctClicked());
+    	Gtk::VBox* SetListPeer(std::vector<Peer> pl);
+		Gtk::VBox* SetListFile(std::vector<File> fl);
 
-    	Gtk::Button BQuitter;
+		void FBDisplayFiles(std::string peer);
 
+    	Gtk::Button* SetButton(std::string name, void fctClicked());
+
+    	Gtk::Button* BQuitter;
+
+    	Gtk::Button* BRegister;
+    	Gtk::Button* BUnregister;
     	
+    	Gtk::Button* BGetPeerList;
+		Gtk::Button* BGetFileList;
 
-        
+		Gtk::Button* BGetFile;
+		Gtk::Button* BSaveFile;
+		Gtk::Button* BDeleteFile;
+    	
+		Gtk::Entry* ETextePeer;
+
+		Gtk::ScrolledWindow* ScrollPeer;
+		Gtk::ScrolledWindow* ScrollFile;
+    	Gtk::VBox* BPeerList;
+    	Gtk::VBox* BFileList;
+
 };
+
 
 #endif

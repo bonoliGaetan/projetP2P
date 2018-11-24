@@ -6,6 +6,9 @@
 #include <cpprest/json.h>
 #include <cstdlib>
 
+#include "../mDataClass/peer.h"
+#include "../mDataClass/file.h"
+
 using namespace web;
 using namespace web::json;
 using namespace utility; 
@@ -52,6 +55,9 @@ public:
 
 	json::value GetJsonFromFile(std::string file);
 	void affData();
+
+	std::vector<Peer> listePair;
+	std::vector<File> listeFichier;
 };
 
 #endif
