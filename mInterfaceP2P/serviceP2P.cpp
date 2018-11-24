@@ -235,7 +235,7 @@ void ServiceP2P::SetListenerMethod(http_listener &plistener, string_t pmethod, i
 			}
 			
 		});
-	} catch(http_listener::http_exception he)
+	} catch(http_exception he)
 	{
 		std::cout << he.what() << std::endl;
 	}
@@ -375,7 +375,7 @@ json::value ServiceP2P::FileToJson(File file)
 	return jret;
 }
 
-json::value ServiceP2P::ListFileToJson(std::vector<File> fileList)
+json::value ServiceP2P::ListFileToJson(std::vector<File> &fileList)
 {
 	if(fileList.size() <= 0)
 		return json::value();
@@ -405,7 +405,7 @@ json::value ServiceP2P::PeerToJson(Peer peer)
 	return jret;
 }
 
-json::value ServiceP2P::ListPeerToJson(std::vector<Peer> peerList)
+json::value ServiceP2P::ListPeerToJson(std::vector<Peer> &peerList)
 {
 	if(peerList.size() <= 0)
 		return json::value();

@@ -1,9 +1,9 @@
 CC=g++
 CFLAGS=-O2 -Wall 
-LIBS= -lboost_system -lcrypto -lssl -lcpprest -std=c++11 -std=gnu++11
+LIBS= -lboost_system -lcrypto -lssl -lcpprest -std=c++11 -std=gnu++11 `pkg-config gtkmm-3.0 --cflags --libs`
 OS=
 
-APPLILIST=mInterfaceP2P.o mDataClass.o
+APPLILIST= mServeur.o mClient.o mGraphique.o mInterfaceP2P.o  mDataClass.o 
 
 TESTLISTMAX=mInterfaceP2P.o mDataClass.o
 TESTLISTGAE=mClient.o mDataClass.o
@@ -11,7 +11,7 @@ TESTLISTALE=
 
 all: clean appliLinux appliWindows
 
-appliLinux: $(APPLILIST) main.cpp
+appliLinux: main.cpp $(APPLILIST) 
 	$(CC) $(FLAGS) -o appliLinux.exe $^ $(LIBS) -D__OPSYS=$(OS)
 
 appliWindows: $(APPLILIST) main.cpp

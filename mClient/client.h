@@ -6,6 +6,8 @@
 #include<fstream>
 #include<map>
 #include<cpprest/json.h>
+
+#include "../main.h"
 #include"../mInterfaceP2P/serviceP2P.h"
 #include"../mDataClass/configPeer.h"
 
@@ -24,6 +26,7 @@ class Client
 	
 	public:
 	Client();
+	Client(ConfigPeer &cf, ServiceP2P &spp);
 	~Client();
 	
 	File json_vers_fichier(json::value fichier);

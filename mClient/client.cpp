@@ -1,12 +1,14 @@
-#include"client.h"
+#include "client.h"
 
-Client::Client(ConfigPeer config, ServiceP2P service)
+
+Client::Client(ConfigPeer &config, ServiceP2P &service)
 {
 	std::cout<<"DEBUT CLIENT"<<std::endl;
 	serviceP2P = service;
 	configuration = config;
 }
 
+Client::Client() { };
 Client::~Client()
 {
 	std::cout<<"FIN"<<std::endl;
@@ -16,7 +18,7 @@ void Client::obtenir_liste_pair_client(std::string dest)
 {
 	std::vector<Peer> liste = serviceP2P.GetPeerList(dest);
 	
-	for(int i = 0; i < liste.size(); i++)
+	for(unsigned int i = 0; i < liste.size(); i++)
 	{
 		listePair.push_back(liste[i]);
 	}
@@ -35,7 +37,7 @@ void Client::obtenir_liste_fichier_client(std::string dest)
 	}
 	else
 	{
-		for(int i = 0; i < listeFichier.size(); i++)
+		for(unsigned int i = 0; i < listeFichier.size(); i++)
 		{
 			actu = std::stoi(listeFichier[i].id,nullptr,10);
 			
@@ -48,7 +50,7 @@ void Client::obtenir_liste_fichier_client(std::string dest)
 		idDepart = max + 1;
 	}
 	
-	for(int i = 0; i < liste.size(); i++)
+	for(unsigned int i = 0; i < liste.size(); i++)
 	{
 		liste[i].id = std::to_string(max++);
 		listePair.push_back(liste[i]);

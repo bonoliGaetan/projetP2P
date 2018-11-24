@@ -1,24 +1,4 @@
-#include <iostream>
-
-
-#include "mInterfaceP2P/serviceP2P.h"
-//#include "mClient/client.h"
-#include "mDataClass/configPeer.h"
-//#include "mServer/server.h"
-
-
-#define FILECONFIG "config.json"
-
-#if __OPSYS == linux
-	#define SL "/"
-#elif __OPSYS == windows
-	#define SL "\\"
-#endif
-
-using namespace web::json;  
-
-std::vector<Peer> listePair;
-
+#include "main.h"
 
 int testhandler(std::string paramUrl, json::value dataIn, json::value &dataOut)
 {
@@ -58,6 +38,15 @@ int main(int nbarg, char* argv[])
 
 	ConfigPeer cf(FILECONFIG);
 	ServiceP2P spp(cf);
+	Client client(cf,spp);
+
+	/*Gtk::Main app(nbarg,argv);
+	
+	Fenetre fen(client,"Salut");
+	Gtk::Main::run(fen);*/
+
+	/*
+	
 
 	cf.affData();
 	// TODO : S'ajouter dans la liste des pairs
@@ -66,6 +55,7 @@ int main(int nbarg, char* argv[])
 	//Server(cf,spp); TODO
 
 	// A SUPPR
+	
 	spp.WaitGetFile(&testhandler);
 
 	File f;
@@ -76,6 +66,7 @@ int main(int nbarg, char* argv[])
 	spp.GetFile(cf.firstRegister,"config.json");
 
 	sleep(15);
+	*/
 
 	return 0;
 }

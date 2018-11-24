@@ -1,9 +1,9 @@
 CC=g++
 CFLAGS=-O2 -Wall 
-LIBS=
+LIBS=`pkg-config gtkmm-3.0 --cflags --libs`
 OS=
 
-FILES=*.o
+FILES=fenetre.o
 
 all: mGraphique.o clean
 

@@ -59,9 +59,9 @@ public:
 	// JSON
 
 	json::value FileToJson(File file);
-	json::value ListFileToJson(std::vector<File> filelist);
+	json::value ListFileToJson(std::vector<File> &filelist);
 	json::value PeerToJson(Peer peer);
-	json::value ListPeerToJson(std::vector<Peer> peerList);
+	json::value ListPeerToJson(std::vector<Peer> &peerList);
 
 	File JsonToFile(json::value file);
 	std::vector<File> JsonToListFile(json::value fileList);

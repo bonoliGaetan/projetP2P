@@ -1,11 +1,13 @@
 #include"serveur.h"
 
-Serveur::Serveur(ConfigPeer config, ServiceP2P service)
+Serveur::Serveur(ConfigPeer &config, ServiceP2P &service)
 {
 	std::cout<<"DEBUT CLIENT"<<std::endl;
 	serviceP2P = service;
 	configuration = config;
 	
+	std::cout << "Le serveur écoute sur : " << config.myUrl << std::endl;
+
 	ajouter_liste_fichier();
 	ajouter_liste_pair();
 	ajouter_pair();
@@ -17,62 +19,68 @@ Serveur::Serveur(ConfigPeer config, ServiceP2P service)
 	
 }
 
+Serveur::Serveur() { }
+Serveur::~Serveur() { }
 
 int Serveur::obtenir_liste_fichier(std::string param, json::value entree, json::value& sortie)
 {
 	// On envoit la liste des meta donnees
-	sortie = liste_fichier_vers_json(listeFichier);
+	sortie = serviceP2P.ListFileToJson(listeFichier);
+	return 0;
 }
 
 int Serveur::obtenir_liste_pair(std::string param, json::value entree, json::value& sortie)
 {
 	// On envoit la liste des pair
 	sortie = serviceP2P.ListPeerToJson(listePair);
+	return 0;
 }
 
 void Serveur::ajouter_liste_fichier()
 {
-	serviceP2P.WaitGetFileList(int obtenir_liste_fichier(std::string, json::value, json::value&));
+	serviceP2P.WaitGetFileList(&(Serveur::obtenir_liste_fichier));
 }
 
 void Serveur::ajouter_liste_pair()
 {
-	serviceP2P.WaitGetPeerList(int obtenir_liste_pair(std::string, json::value, json::value&));
+	serviceP2P.WaitGetPeerList(&(Serveur::obtenir_liste_pair));
 }
 
 void Serveur::ajouter_pair()
 {
-	serviceP2P.WaitRegister(int enregistrement(std::string, json::value, json::value&));
+	serviceP2P.WaitRegister(&(Serveur::enregistrement));
 }
 
 void Serveur::supprimer_pair()
 {
-	serviceP2P.WaitUnregister(int desenregistrement(std::string, json::value, json::value&));
+	serviceP2P.WaitUnregister(&(Serveur::desenregistrement));
 }
 
 int Serveur::enregistrement(std::string param, json::value entree, json::value& sortie)
 {
 	// On ajoute un pair a notre liste de pair
 	Peer nouvPaire = serviceP2P.JsonToPeer(entree);
-	listePair.push_bock(nouvPaire);
+	listePair.push_back(nouvPaire);
+	return 0;
 }
 
 int Serveur::desenregistrement(std::string urlPair, json::value entree, json::value& sortie)
 {
 	// On supprime un pair de notre liste de pair
-	for(int i = 0; i < listePair.size(); i++)
+	for(unsigned int i = 0; i < listePair.size(); i++)
 	{
 		if(listePair[i].url == urlPair)
 		{
-			listePair.erase(i);
+			listePair.erase(listePair.begin()+i);
 			break;
 		}
 	}
+	return 0;
 }
 
 void Serveur::ajouter_fichier()
 {
-	serviceP2P.WaitGetFile(int donner_fichier(std::string nomFichier, json::value entree, json::value& sortie));
+	serviceP2P.WaitGetFile(&(Serveur::donner_fichier));
 }
 
 int Serveur::donner_fichier(std::string nomFichier, json::value entree, json::value& sortie)
@@ -81,42 +89,53 @@ int Serveur::donner_fichier(std::string nomFichier, json::value entree, json::va
 	chemin = chemin  + SL + nomFichier;
 	std::ifstream fichier(chemin,std::ifstream::in);
 	
-	for(int i = 0; i < listeFichier.size(); i++)
+	for(unsigned int i = 0; i < listeFichier.size(); i++)
 	{
 		if(listeFichier[i].name == nomFichier)
 		{
-			sortie["size"] = listeFichier[i].size();
+			sortie["size"] = listeFichier[i].size;
 			break;
 		}
 	}
 	
-	char* buffer;
+	
 	
 	try
-	{
-		fichier.read(buffer,lenght);
-		std::string contenu = buffer.c_str();
+	{	
+		fichier.seekg (0, fichier.end);
+	    int length = fichier.tellg();
+	    fichier.seekg (0, fichier.beg);
+
+	    char* buffer = new char[length];
+
+		fichier.read(buffer,length);
+		std::string contenu(buffer);
+		sortie["body"] = json::value::string(contenu);
+
+		delete [] buffer;
 	}
 	catch(std::exception e)
 	{
-		cout<<"Fichier trop gros"<<endl;
+		std::cout<<"Fichier trop gros"<<std::endl;
 		return 0;
 	}
 	
-	sortie["body"] = utility::conversions::to_string_t(contenu);
+	
+
+	return 0;
 	
 }
 
 void Serveur::supprimer_fichier()
 {
-	serviceP2P.WaitDeleteFile(int supression_fichier(std::string idFichier, json::value entree, json::value& sortie));
+	serviceP2P.WaitDeleteFile(&(Serveur::supression_fichier));
 }
 
 int Serveur::supression_fichier(std::string idFichier, json::value entree, json::value& sortie)
 {
 	std::string nomFichier;
 	
-	for(int i = 0; i < listeFichier.size(); i++)
+	for(unsigned int i = 0; i < listeFichier.size(); i++)
 	{
 		if(listeFichier[i].id == idFichier)
 		{
@@ -127,14 +146,13 @@ int Serveur::supression_fichier(std::string idFichier, json::value entree, json:
 	
 	std::string chemin = configuration.repServer + SL + nomFichier;
 	
-	char* cheminC = chemin.c_str();
-	
-	int i = remove(cheminC);
+	remove(chemin.c_str());
+	return 0;
 }
 
 void Serveur::enregistrer_fichier()
 {
-	serviceP2P.WaitSaveFile(int sauvegarder_fichier(std::string param, json::value entree, json::value& sortie));
+	serviceP2P.WaitSaveFile(&(Serveur::sauvegarder_fichier));
 }
 
 int Serveur::sauvegarder_fichier(std::string param, json::value entree, json::value& sortie)
@@ -150,7 +168,7 @@ int Serveur::sauvegarder_fichier(std::string param, json::value entree, json::va
 	}
 	else
 	{
-		for(int i = 0; i < listeFichier.size(); i++)
+		for(unsigned int i = 0; i < listeFichier.size(); i++)
 		{
 			actu = std::stoi(listeFichier[i].id,nullptr,10);
 			
@@ -165,14 +183,16 @@ int Serveur::sauvegarder_fichier(std::string param, json::value entree, json::va
 		fichier.id = nouvId;
 	}
 	listeFichier.push_back(fichier);
+	return 0;
 }
 
 void Serveur::maj_fichier()
 {
-	serviceP2P.WaitUpdateFile(int rafraichir_fichier(std::string idFichier, json::value entree, json::value& sortie));
+	serviceP2P.WaitUpdateFile(&(Serveur::rafraichir_fichier));
 }
 
 int Serveur::rafraichir_fichier(std::string idFichier, json::value entree, json::value& sortie)
 {
 	// A Completer du stagiaire
+	return 0;
 }
