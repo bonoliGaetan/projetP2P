@@ -16,9 +16,8 @@ class Client
 {
 	private:
 	std::string url;
-	std::map<std::string,std::string> listeOption;
-	std::vector<Peer> listePaire;
 	std::vector<File> listeFichier;
+	ConfigPeer configuration;
 	// TODO => fonction dans un thread qui utilise waitRequestedClient et quiva traiter les donnes recues.
 	
 	public:
@@ -51,5 +50,11 @@ class Client
 	
 	int enregistrement(std::string param, json::value entree, json::value& sortie);
 	int desenregistrement(std::string urlPair, json::value entree, json::value& sortie);
+	
+	void obtenir_liste_pair_client(std::string dest);
+	void obtenir_liste_fichier_client(std::string dest);
+	void obtenir_fichier_client();
+	void supprimer_fichier_client(std::string dest,std::string id);
+	void sauvegarder_fichier_client(std::string dest, File file);
 };
 #endif
