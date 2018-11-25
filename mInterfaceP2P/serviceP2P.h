@@ -106,7 +106,10 @@ protected:
 
 	std::string getIPAddress();
 
-	std::vector<http_listener*> serverListeners;
+	http_listener* L_peers;
+	http_listener* L_files;
+	http_listener* L_files_f; 
+
 
 	json::value RequestHttp(std::string pdest,std::string pmethod, std::string ppath, json::value &pbody);
 	

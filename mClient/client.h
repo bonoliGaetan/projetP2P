@@ -12,8 +12,12 @@
 #include "../mInterfaceP2P/serviceP2P.h"
 #include "../mDataClass/peer.h"
 #include "../mDataClass/configPeer.h"
-#include "../main.h"
 
+#if __OPSYS == linux
+	#define SL "/"
+#elif __OPSYS == windows
+	#define SL "\\"
+#endif
 
 using namespace web;
 

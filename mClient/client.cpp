@@ -52,9 +52,14 @@ void Client::obtenir_fichier_client(std::string dest, std::string id)
 	fic.read (buffer,length);
 	fic.close();
 	
-	std::ofstream nouvFichier(configuration.repClient,std::ios::out);
+	std::string chemin = configuration.repClient +SL +fichier.id +"_" +fichier.name;
+	std::ofstream nouvFichier(chemin,std::ios::out);
 	nouvFichier << std::string(buffer);
 	nouvFichier.close();
+
+	remove(fichier.body.c_str());
+
+	delete [] buffer;
 }
 
 void Client::supprimer_fichier_client(std::string dest,std::string id)

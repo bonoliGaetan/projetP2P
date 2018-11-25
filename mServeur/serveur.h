@@ -4,9 +4,18 @@
 #include<string>
 #include<stdio.h>
 
-#include "../main.h"
 #include "../mInterfaceP2P/serviceP2P.h"
 #include "../mDataClass/configPeer.h"
+
+#define METAF "metafile.json"
+
+
+#if __OPSYS == linux
+	#define SL "/"
+	#define SERVEURLOGS "logs/serverlogs.txt"
+#elif __OPSYS == windows
+	#define SL "\\"
+#endif
 
 class Serveur
 {
@@ -15,6 +24,8 @@ class Serveur
 	Serveur(ConfigPeer &cf, ServiceP2P &spp);
 	Serveur();
 	~Serveur();
+
+	std::vector<File> GetFileListFromFile(std::string file);
 
 	static int obtenir_liste_fichier(std::string, json::value, json::value&);
 	static int obtenir_liste_pair(std::string param, json::value entree, json::value& sortie);
@@ -39,8 +50,6 @@ class Serveur
 	
 	
 };
-
-
 
 
 #endif

@@ -7,7 +7,7 @@
 #define LARGEUR 1200
 #define HAUTEUR 800
 
-#include "../main.h"
+
 #include "../mDataClass/peer.h"
 #include "../mDataClass/file.h"
 

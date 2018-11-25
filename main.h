@@ -8,11 +8,11 @@
 #include "mDataClass/file.h"
 #include "mDataClass/configPeer.h"
 
-//#include "mInterfaceP2P/serviceP2P.h"
-#include "mGraphique/fenetre.h"
+#include "mInterfaceP2P/serviceP2P.h"
+//#include "mGraphique/fenetre.h"
 
-//#include "mClient/client.h"
-//#include "mServeur/serveur.h"
+#include "mClient/client.h"
+#include "mServeur/serveur.h"
 
 
 

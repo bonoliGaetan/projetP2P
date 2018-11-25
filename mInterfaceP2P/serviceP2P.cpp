@@ -18,8 +18,11 @@ ServiceP2P::ServiceP2P() {}
 ServiceP2P::ServiceP2P(ConfigPeer &pcf)
 {
 	this->lastResponse = new_StError(0,"");
-	this->serverListeners.empty();
 	this->cf = pcf;
+
+	this->L_peers = NULL;
+	this->L_files = NULL;
+	this->L_files_f = NULL; 
 
 	this->myIpAddr_t = utility::conversions::to_string_t(cf.myAddress);
 	this->myPort_t = utility::conversions::to_string_t(cf.myPort);
@@ -96,7 +99,7 @@ std::vector<File> ServiceP2P::GetFileList(std::string dest)
 
 File ServiceP2P::GetFile(std::string dest, std::string id)
 {
-	std::string path("/files/" + id);
+	std::string path("/file/" + id);
 	std::string method("GET");
 	json::value body = json::value();
 
@@ -111,6 +114,8 @@ File ServiceP2P::GetFile(std::string dest, std::string id)
 		std::ofstream sfile(fret.body,std::ios::out);
 	   	sfile << GetJsonString(response,"body");
 	    sfile.close();
+	    fret.id = id;
+	    fret.name = GetJsonString(response,"name");
 
 	}catch(std::ofstream::failure ioe)
 	{
@@ -123,7 +128,7 @@ File ServiceP2P::GetFile(std::string dest, std::string id)
 
 void ServiceP2P::DeleteFile(std::string dest, std::string id)
 {
-	std::string path("/files/" + id);
+	std::string path("/file/" + id);
 	std::string method("DELETE");
 	json::value body = json::value();
 
@@ -145,7 +150,7 @@ void ServiceP2P::SaveFile(std::string dest, File file)
 
 void ServiceP2P::UpdateFile(std::string dest, File file)
 {
-	std::string path("/files/" + file.id);
+	std::string path("/file/" + file.id);
 	std::string method("POST");
 	json::value body;
 	try {
@@ -178,32 +183,30 @@ void ServiceP2P::WaitUnregister(int fctTraitement(std::string,json::value, json:
 {
 	string_t path = "http://0.0.0.0:" +this->myPort_t +"/peers";
 
-	http_listener* myListener = new http_listener(path);
-	this->SetListenerMethod(*myListener,U("DELETE"),fctTraitement);
+	if(L_peers == NULL)
+		L_peers = new http_listener(path);
+	this->SetListenerMethod(*L_peers,U("DELETE"),fctTraitement);
 	
-	myListener->open().wait();
+	L_peers->open().wait();
 
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 	logFile << "SetListener:DELETE:" << path << std::endl;
 	logFile.close();	
-
-	serverListeners.push_back(myListener);
 }
 
 void ServiceP2P::WaitRegister(int fctTraitement(std::string,json::value,json::value&))
 {
 	string_t path = "http://0.0.0.0:" +this->myPort_t +"/peers";
 
-	http_listener* myListener = new http_listener(path);
-	this->SetListenerMethod(*myListener,U("POST"),fctTraitement);
+	if(L_peers == NULL)
+		L_peers = new http_listener(path);
+	this->SetListenerMethod(*L_peers,U("POST"),fctTraitement);
 
-	myListener->open().wait();
+	L_peers->open().wait();
 
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 	logFile << "SetListener:POST:" << path << std::endl;
 	logFile.close();	
-
-	serverListeners.push_back(myListener);
 }
 
 void ServiceP2P::SetListenerMethod(http_listener &plistener, string_t pmethod, int fctTraitement(std::string,json::value,json::value&))
@@ -212,7 +215,7 @@ void ServiceP2P::SetListenerMethod(http_listener &plistener, string_t pmethod, i
 		plistener.support(pmethod, [=] (http_request req) {
 			
 			std::string paramUrl = req.relative_uri().to_string();
-
+			//paramUrl = paramUrl.substr(1,paramUrl.length());
 			json::value dataIn = req.extract_json().get();
 			json::value dataOut = json::value();
 
@@ -266,102 +269,101 @@ void ServiceP2P::WaitGetPeerList(int fctTraitement(std::string, json::value, jso
 {
 	string_t path = "http://0.0.0.0:" +this->myPort_t +"/peers";
 
-	http_listener* myListener = new http_listener(path);
-	this->SetListenerMethod(*myListener,U("GET"),fctTraitement);
+	if(L_peers == NULL)
+		L_peers = new http_listener(path);
+	this->SetListenerMethod(*L_peers,U("GET"),fctTraitement);
 
-	myListener->open().wait();
+	L_peers->open().wait();
 
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 	logFile << "SetListener:GET:" << path << std::endl;
 	logFile.close();	
-
-	serverListeners.push_back(myListener);
 }
 
 void ServiceP2P::WaitGetFileList(int fctTraitement(std::string, json::value, json::value&))
 {
 	string_t path = "http://0.0.0.0:" +this->myPort_t +"/files";
+	if(L_files == NULL)
+		L_files = new http_listener(path);
+	this->SetListenerMethod(*L_files,U("GET"),fctTraitement);
 
-	http_listener* myListener = new http_listener(path);
-	this->SetListenerMethod(*myListener,U("GET"),fctTraitement);
-
-	myListener->open().wait();
+	L_files->open().wait();
 
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 	logFile << "SetListener:GET:" << path << std::endl;
 	logFile.close();	
-
-	serverListeners.push_back(myListener);
 }
 
 void ServiceP2P::WaitGetFile(int fctTraitement(std::string, json::value, json::value&))
 {
-	string_t path = "http://0.0.0.0:" +this->myPort_t +"/files/";
+	string_t path = "http://0.0.0.0:" +this->myPort_t +"/file/";
+	
+	if(L_files_f == NULL)
+		L_files_f = new http_listener(path);
+	this->SetListenerMethod(*L_files_f,U("GET"),fctTraitement);
 
-	http_listener* myListener = new http_listener(path);
-	this->SetListenerMethod(*myListener,U("GET"),fctTraitement);
-
-	myListener->open().wait();
+	L_files_f->open().wait();
 
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 	logFile << "SetListener:GET:" << path << std::endl;
 	logFile.close();	
-
-	serverListeners.push_back(myListener);
 }
 
 void ServiceP2P::WaitDeleteFile(int fctTraitement(std::string, json::value, json::value&))
 {
-	string_t path = "http://0.0.0.0:" +this->myPort_t +"/files/";
+	string_t path = "http://0.0.0.0:" +this->myPort_t +"/file/";
 
-	http_listener* myListener = new http_listener(path);
-	this->SetListenerMethod(*myListener,U("DELETE"),fctTraitement);
+	if(L_files_f == NULL)
+		L_files_f = new http_listener(path);
+	this->SetListenerMethod(*L_files_f,U("DELETE"),fctTraitement);
 
-	myListener->open().wait();
+	L_files_f->open().wait();
 
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 	logFile << "SetListener:DELETE:" << path << std::endl;
 	logFile.close();	
-
-	serverListeners.push_back(myListener);
 }
 
 void ServiceP2P::WaitSaveFile(int fctTraitement(std::string, json::value, json::value&))
 {
 	string_t path = "http://0.0.0.0:" +this->myPort_t +"/files";
 
-	http_listener* myListener = new http_listener(path);
-	this->SetListenerMethod(*myListener,U("POST"),fctTraitement);
+	if(L_files == NULL)
+		L_files = new http_listener(path);
+	this->SetListenerMethod(*L_files,U("POST"),fctTraitement);
 
-	myListener->open().wait();
+	L_files->open().wait();
 
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 	logFile << "SetListener:POST:" << path << std::endl;
 	logFile.close();
-
-	serverListeners.push_back(myListener);
 }
 
 void ServiceP2P::WaitUpdateFile(int fctTraitement(std::string, json::value, json::value&))
 {
-	string_t path = "http://0.0.0.0:" +this->myPort_t +"/files/";
+	string_t path = "http://0.0.0.0:" +this->myPort_t +"/file/";
 
-	http_listener* myListener = new http_listener(path);
-	this->SetListenerMethod(*myListener,U("POST"),fctTraitement);
+	if(L_files_f == NULL)
+		L_files_f = new http_listener(path);
+	this->SetListenerMethod(*L_files_f,U("POST"),fctTraitement);
 
-	myListener->open().wait();
+	L_files_f->open().wait();
 
 	std::ofstream logFile(HTTPLOGS,std::ios::app);
 	logFile << "SetListener:POST:" << path << std::endl;
 	logFile.close();	
-
-	serverListeners.push_back(myListener);
 }
 
 void ServiceP2P::CloseAllWaitServer()
 {
-	for(std::vector<http_listener*>::iterator it = this->serverListeners.begin() ; it != this->serverListeners.end(); ++it)
-		delete *it;
+	delete this->L_files;
+	delete this->L_peers;
+	delete this->L_files_f;
+
+
+	this->L_files = NULL;
+	this->L_peers = NULL;
+	this->L_files_f = NULL;
 }
 
 json::value ServiceP2P::FileToJson(File file)
