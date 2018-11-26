@@ -373,6 +373,7 @@ json::value ServiceP2P::FileToJson(File file)
 	jret["id"] = json::value::string(file.id);
 	jret["name"] = json::value::string(file.name);
 	jret["size"] = file.size;
+	jret["body"] = json::value::string(file.body);
 
 	return jret;
 }
@@ -434,6 +435,7 @@ File ServiceP2P::JsonToFile(json::value val)
 	fret.id = GetJsonString(val,"id");
 	fret.name = GetJsonString(val,"name");
 	fret.size = GetJsonInt(val,"size");
+	fret.body = GetJsonString(val,"body");
 
 	return fret;
 }

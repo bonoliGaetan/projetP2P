@@ -35,25 +35,20 @@ Serveur::Serveur() { }
 Serveur::~Serveur() 
 {	
 	json::value sval;
-	if(configuration.listeFichier.size() <= 0)
-		sval = json::value::string("");
-	else 
+
+	sval["size"] = configuration.listeFichier.size();
+
+	int cpt ;
+	std::vector<File>::iterator it;
+	json::value jfileList = json::value::array();
+	for(it = configuration.listeFichier.begin(), cpt = 0 ; it != configuration.listeFichier.end(); ++it, ++cpt )
 	{
-		sval["size"] = configuration.listeFichier.size();
-
-		int cpt ;
-		std::vector<File>::iterator it;
-		json::value jfileList = json::value::array();
-		for(it = configuration.listeFichier.begin(), cpt = 0 ; it != configuration.listeFichier.end(); ++it, ++cpt )
-		{
-			jfileList[cpt] = serviceP2P.FileToJson(*it);
-			jfileList[cpt]["body"] = json::value::string(it->body);
-		}
-		sval["fileList"] = jfileList;
-
+		jfileList[cpt] = serviceP2P.FileToJson(*it);
+		jfileList[cpt]["body"] = json::value::string(it->body);
 	}
+	sval["fileList"] = jfileList;
 
-	std::ofstream metafile(METAF,std::ios::trunc);
+	std::ofstream metafile(METAF,std::ios::out);
 	metafile << sval.serialize();
 	metafile.close();
 
@@ -205,7 +200,7 @@ int Serveur::sauvegarder_fichier(std::string param, json::value entree, json::va
 	logFile.close();
 
 	File fichier = serviceP2P.JsonToFile(entree);
-	
+
 	int max = -1;
 	int actu;
 
