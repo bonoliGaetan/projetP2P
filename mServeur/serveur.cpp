@@ -11,7 +11,6 @@ Serveur::Serveur(ConfigPeer &config, SerServerP2P &service)
 
 	Peer myPeer;
 	myPeer.url = configuration.myUrl;
-	myPeer.name = "myPeer";
 	
 	myPeer.fileList = GetFileListFromFile(METAF);
 
@@ -48,12 +47,9 @@ Serveur::~Serveur()
 	
 	for(it = configuration.listeFichier.begin(), cpt = 0 ; it != configuration.listeFichier.end(); ++it, ++cpt )
 	{
-		json::value tmp = json::value::object();
-		tmp = FileToJson(*it);
-		tmp["body"] = json::value::string(it->body);
-		jfileList[cpt] = tmp;
+		jfileList[cpt] = it->ToJson(1);
 	}
-	sval["fileList"] = jfileList;
+	sval["list"] = jfileList;
 
 	std::ofstream metafile(METAF,std::ios::out);
 	metafile << sval.serialize() << std::endl;
@@ -64,23 +60,41 @@ Serveur::~Serveur()
 
 int Serveur::obtenir_liste_fichier(std::string param, json::value entree, json::value& sortie)
 {
-	// On envoit la liste des meta donnees
-	sortie = ListFileToJson(Serveur::configuration.listeFichier);
+	json::value sval = json::value::object();
+	std::vector<File>::iterator it;
+	json::value jfileList = json::value::array();
+	int cpt;
+
+	for(it = Serveur::configuration.listeFichier.begin(), cpt = 0 ; it != Serveur::configuration.listeFichier.end(); ++it, ++cpt )
+	{
+		jfileList[cpt] = it->ToJson(0);
+	}
+	sval["list"] = jfileList;
+	sortie = sval;
+	
 	return 0;
 }
 
 int Serveur::obtenir_liste_pair(std::string param, json::value entree, json::value& sortie)
 {
-	// On envoit la liste des pair
-	sortie = ListPeerToJson(Serveur::configuration.listePair);
+	json::value sval = json::value::object();
+	std::vector<Peer>::iterator it;
+	json::value jPeerList = json::value::array();
+	int cpt;
+
+	for(it = Serveur::configuration.listePair.begin(), cpt = 0 ; it != Serveur::configuration.listePair.end(); ++it, ++cpt )
+	{
+		jPeerList[cpt] = it->ToJson();
+	}
+	sval["list"] = jPeerList;
+	sortie = sval;
+
 	return 0;
 }
 
 void Serveur::ajouter_liste_fichier()
 {
-
 	Serveur::serviceP2P.WaitGetFileList(&(Serveur::obtenir_liste_fichier));
-
 }
 
 void Serveur::ajouter_liste_pair()
@@ -101,18 +115,19 @@ void Serveur::supprimer_pair()
 int Serveur::enregistrement(std::string param, json::value entree, json::value& sortie)
 {
 	// On ajoute un pair a notre liste de pair
-	Peer nouvPaire = JsonToPeer(entree);
+	Peer nouvPaire = Peer::FromJson(entree);
 	Serveur::configuration.listePair.push_back(nouvPaire);
+	
 	return 0;
 }
 
 int Serveur::desenregistrement(std::string urlPair, json::value entree, json::value& sortie)
 {
 	// On supprime un pair de notre liste de pair
-	
+	Peer pair = Peer::FromJson(entree);
 	for(unsigned int i = 0; i < Serveur::configuration.listePair.size(); i++)
 	{
-		if(Serveur::configuration.listePair[i].url == urlPair)
+		if(Serveur::configuration.listePair[i].url == pair.url)
 		{
 			Serveur::configuration.listePair.erase(Serveur::configuration.listePair.begin()+i);
 			break;
@@ -130,7 +145,7 @@ int Serveur::donner_fichier(std::string id, json::value entree, json::value& sor
 {
 	
 	unsigned int i;
-	for( i = 0; i < Serveur::configuration.listeFichier.size(); i++)
+	for(i = 0; i < Serveur::configuration.listeFichier.size(); i++)
 	{
 		if(Serveur::configuration.listeFichier[i].id == id)
 		{
@@ -154,11 +169,10 @@ int Serveur::donner_fichier(std::string id, json::value entree, json::value& sor
 		std::string contenu(buffer);
 
 		Serveur::configuration.listeFichier[i].size = length;
-		sortie["size"] = json::value::string(std::to_string(length));
-		sortie["name"] = json::value::string(Serveur::configuration.listeFichier[i].name);
+		//sortie["size"] = json::value::string(std::to_string(length));
+		//sortie["name"] = json::value::string(Serveur::configuration.listeFichier[i].name);
 		sortie["body"] = json::value::string(contenu);
 		
-
 		delete [] buffer;
 		fichier.close();
 	}
@@ -206,26 +220,7 @@ int Serveur::sauvegarder_fichier(std::string param, json::value entree, json::va
 	logFile << "Save File Meta" << std::endl;
 	logFile.close();
 
-	File fichier = JsonToFile(entree);
-
-	int max = -1;
-	int actu;
-
-	unsigned int i;
-	for(i = 0; i < Serveur::configuration.listeFichier.size(); i++)
-	{
-		actu = std::stoi(Serveur::configuration.listeFichier[i].id,nullptr,10);
-	
-		if(actu > max)
-		{
-			max = actu;
-		}
-	}
-		
-	std::string nouvId = std::to_string(max + 1);
-	
-	fichier.id = nouvId;
-	fichier.name = GetJsonString(entree,"name");
+	File fichier = File::FromJson(entree);
 	fichier.body = fichier.name +"_" +fichier.id;
 
 	std::cout << "Fichier ajouter : ID = " << fichier.id << std::endl;
@@ -241,10 +236,6 @@ void Serveur::maj_fichier()
 
 int Serveur::rafraichir_fichier(std::string idFichier, json::value entree, json::value& sortie)
 {
-	std::ofstream logFile(SERVEURLOGS,std::ios::app);
-	logFile << "Save File Body" << std::endl;
-	logFile.close();
-
 	unsigned int i;
 	for(i = 0; i < Serveur::configuration.listeFichier.size(); i++)
 	{
@@ -268,42 +259,41 @@ int Serveur::rafraichir_fichier(std::string idFichier, json::value entree, json:
 
 std::vector<File> Serveur::GetFileListFromFile(std::string file)
 {
-	
+	std::ifstream sfile(file,std::ios::in);
+	if(!sfile)
+		return std::vector<File>();
 
-		std::ifstream sfile(file,std::ios::in);
-		if(!sfile)
-			return std::vector<File>();
+    // get length of file:
+    sfile.seekg (0, sfile.end);
+    int length = sfile.tellg();
+    sfile.seekg (0, sfile.beg);
 
-	    // get length of file:
-	    sfile.seekg (0, sfile.end);
-	    int length = sfile.tellg();
-	    sfile.seekg (0, sfile.beg);
+    char* buffer = new char [length+1];
 
-	    char* buffer = new char [length+1];
+    // read data as a block:
+    sfile.read (buffer,length);
+    buffer[length] = '\0';
 
-	    // read data as a block:
-	    sfile.read (buffer,length);
-	    buffer[length] = '\0';
+    std::ofstream logFile(SERVEURLOGS,std::ios::app);
+    logFile << buffer << std::endl;
+	logFile.close();
 
-	    std::ofstream logFile(SERVEURLOGS,std::ios::app);
-	    logFile << buffer << std::endl;
-		logFile.close();
+    string_t str(buffer);
+    // ...buffer contains the entire file...
+    json::value jret = json::value::parse(str);
 
-	    string_t str(buffer);
-	    // ...buffer contains the entire file...
-	    json::value jret = json::value::parse(str);
+    logFile = std::ofstream(SERVEURLOGS,std::ios::app);
+    logFile << jret.serialize() << std::endl;
+	logFile.close();
 
-	    logFile = std::ofstream(SERVEURLOGS,std::ios::app);
-	    logFile << jret.serialize() << std::endl;
-		logFile.close();
+    delete[] buffer;
 
-	    delete[] buffer;
+    sfile.close();
 
-	    sfile.close();
-	    return JsonToListFile(jret);
-	/*}catch(json::json_exception je)
-	{
-		std::cout << "Erreur de lecture du fichier de fichiers" << std::endl;
-		exit(0);
-	}*/
+    std::vector<File> lfret;	
+	json::value jlist = jret["list"];
+	for(int i = 0; jlist[i] != json::value::null() ; ++i)
+		lfret.push_back(File::FromJson(jlist[i]));
+
+	return lfret;
 }

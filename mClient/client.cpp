@@ -126,10 +126,10 @@ std::vector<File> Client::obtenir_liste_fichier_d_un_pair(std::string url)
 
 std::string Client::affecter_id(int pairId, std::string nomFic, int tailleFic)
 {
-	char* carac = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	char carac[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	const char* nom = nomFic.c_str();
 	int graine = 0;
-	int i ;
+	unsigned int i ;
 	
 	for(i = 0; i < nomFic.size(); i++)
 	{

@@ -3,7 +3,7 @@ CFLAGS=-O2 -Wall
 LIBS=-std=c++11 -std=gnu++11
 OS=
 
-FILES=file.o peer.o configPeer.o
+FILES=file.o peer.o configPeer.o jsonUtility.o
 
 all: mDataClass.o clean
 

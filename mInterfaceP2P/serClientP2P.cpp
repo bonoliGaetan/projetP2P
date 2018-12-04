@@ -77,18 +77,6 @@ std::vector<Peer> SerClientP2P::GetPeerList(std::string dest)
 	return JsonToListPeer(response);
 }
 
-
-std::vector<File> SerClientP2P::GetFileList(std::string dest)
-{
-	std::string path("/files");
-	std::string method("GET");
-	json::value body = json::value();
-
-	json::value response = RequestHttp("http://"+dest,method,path,body);
-
-	return JsonToListFile(response);
-}
-
 File SerClientP2P::GetFile(std::string dest, std::string id)
 {
 	std::string path("/files/" + id);
@@ -132,6 +120,11 @@ void SerClientP2P::SaveFile(std::string dest, File file)
 	std::string path("/files");
 	std::string method("POST");
 	json::value body = FileToJson(file);
+
+	std::ifstream sfile(file.body,std::ios::in);
+	sfile.seekg (0, sfile.end);
+	file.size = sfile.tellg();
+	sfile.close();
 
 	json::value response = RequestHttp("http://"+dest,method,path,body);
 
@@ -192,3 +185,13 @@ void SerClientP2P::UnregisterPeer(std::string dest, std::string url)
 	RequestHttp("http://"+dest,method,path,body);
 }
 
+std::vector<File> SerClientP2P::GetFileList(std::string dest)
+{
+	std::string path("/files");
+	std::string method("GET");
+	json::value body = json::value();
+
+	json::value response = RequestHttp("http://"+dest,method,path,body);
+
+	return JsonToListFile(response);
+}

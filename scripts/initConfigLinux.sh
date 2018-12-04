@@ -14,7 +14,8 @@ then
 	echo '"Ip_address_client":"",' >> config.json
 	echo '"Port_min":5000,' >> config.json
 	echo '"Port_max":5010,' >> config.json
-	echo '"Nom":""'>> config.json
+	echo '"Nom":"",'>> config.json
+	echo '"id_pair":1000'
 	echo '}' >> config.json
 fi
 

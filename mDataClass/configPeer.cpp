@@ -20,7 +20,9 @@ ConfigPeer::ConfigPeer(std::string file)
 	this->maxPort = GetJsonInt(jconf,MAXP);
 	this->minPort = GetJsonInt(jconf,MINP);
 	this->myName = GetJsonString(jconf,NAME);
+	this->id = GetJsonInt(jconf,IDPR);
 
+	srand(this->id);
 	int iPort = rand()%(maxPort - minPort +1) +minPort;
 	this->myPort = std::to_string(iPort);
 
@@ -45,6 +47,7 @@ void ConfigPeer::affData()
 	s += "myName:" +this->myName +"\n";
 	s += "myUrl:" +this->myUrl +"\n";
 	s += "myPort:" +this->myPort +"\n";
+	s += "myId:" +std::to_string(this->id) +"\n";
 
 	std::cout << s;
 
@@ -90,29 +93,7 @@ json::value ConfigPeer::GetJsonFromFile(std::string file)
 	}
 }
 
-int GetJsonInt(json::value &jval, string_t key)
-{
-	int ret;
-	try {
-		ret = jval.at(key).as_integer();
-	}catch(json::json_exception je) {
-		ret = 0;
-	} 
-	return ret;
-}
 
-std::string GetJsonString(json::value &jval, string_t key)
-{
-	string_t ret_t;
-	std::string ret;
-	try {
-		ret_t = jval.at(key).as_string();
-		ret = utility::conversions::to_utf8string(ret_t);
-	}catch(json::json_exception je) {
-		ret = "";
-	} 
-	return ret;
-}
 
 json::value FileToJson(File file)
 {
@@ -195,10 +176,10 @@ std::vector<File> JsonToListFile(json::value val)
 	if(size <= 0)
 		return lfret;
 	
-	json::value jlist = val.at("fileList");
+	json::value jlist = val.at("list");
 	int i;
 	for(i = 0; i < size ; ++i)
-		lfret.push_back(JsonToFile(jlist[i]));
+		lfret.push_back(File::FromJson(jlist[i]));
 
 	return lfret;
 }

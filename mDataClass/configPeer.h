@@ -9,6 +9,7 @@
 
 #include "../mDataClass/peer.h"
 #include "../mDataClass/file.h"
+#include "../mDataClass/jsonUtility.h"
 
 
 using namespace web::http;                  	// Common HTTP functionality
@@ -33,9 +34,9 @@ using namespace utility;
 #define MINP "Port_min"
 #define MAXP "Port_max"
 #define NAME "Nom"
+#define IDPR "id_pair"
 
-std::string GetJsonString(json::value &jval, string_t key);
-int GetJsonInt(json::value &jval, string_t key);
+
 
 json::value FileToJson(File file);
 json::value ListFileToJson(std::vector<File> &filelist);
@@ -69,6 +70,7 @@ public:
 	std::string myName;
 	int maxPort;
 	int minPort;
+	int id;
 
 	json::value GetJsonFromFile(std::string file);
 	void affData();
