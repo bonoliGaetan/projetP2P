@@ -46,7 +46,7 @@ class Client
 	void desenregistrer_pair_client(std::string dest, std::string url);
 	void maj_fichier_client(std::string dest, File file);
 	
-	std::string affecter_id(std::string pairId, std::string nomFic, int tailleFic);
+	std::string affecter_id(int pairId, std::string nomFic, int tailleFic);
 	
 	std::vector<File> obtenir_liste_fichier_d_un_pair(std::string url);
 };
