@@ -124,3 +124,38 @@ std::vector<File> Client::obtenir_liste_fichier_d_un_pair(std::string url)
 }
 
 
+std::string Client::affecter_id(int pairId, std::string nomFic, int tailleFic)
+{
+	char* carac = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	const char* nom = nomFic.c_str();
+	int graine = 0;
+	int i ;
+	
+	for(i = 0; i < nomFic.size(); i++)
+	{
+		graine += nom[i] * (1000 + i * 100);
+	}
+	
+	graine += 1000000 * pairId;
+	
+	graine += tailleFic;
+	
+	srand(graine);
+	
+	int alea;
+	char chaine[10];
+	
+	for(int j = 0; j < 10 ; j++)
+	{
+		alea = rand()%62;
+		chaine[j] = carac[alea];
+	}
+	
+	std::string resultat = chaine;
+	
+	return resultat;
+}
+
+
+
+
