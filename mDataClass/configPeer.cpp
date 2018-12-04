@@ -113,3 +113,144 @@ std::string GetJsonString(json::value &jval, string_t key)
 	} 
 	return ret;
 }
+
+json::value FileToJson(File file)
+{
+	json::value jret;
+
+	jret["id"] = json::value::string(file.id);
+	jret["name"] = json::value::string(file.name);
+	jret["size"] = file.size;
+	jret["body"] = json::value::string(file.body);
+
+	return jret;
+}
+
+json::value ListFileToJson(std::vector<File> &fileList)
+{
+	if(fileList.size() <= 0)
+		return json::value();
+
+	json::value jret;
+	jret["size"] = fileList.size();
+
+	int cpt;
+	std::vector<File>::iterator it;
+	json::value jfileList = json::value::array();
+	for(it = fileList.begin(), cpt = 0 ; it != fileList.end(); ++it, ++cpt )
+	{
+		jfileList[cpt] = FileToJson(*it);
+	}
+	jret["fileList"] = jfileList;
+
+	return jret;
+}
+
+json::value PeerToJson(Peer peer)
+{
+	json::value jret;
+	jret["url"] = json::value::string(peer.url);
+	jret["name"] = json::value::string(peer.name);
+	jret["fileList"] = ListFileToJson(peer.fileList);
+
+	return jret;
+}
+
+json::value ListPeerToJson(std::vector<Peer> &peerList)
+{
+	if(peerList.size() <= 0)
+		return json::value();
+
+	json::value jret;
+	jret["size"] = peerList.size();
+
+	int cpt ;
+	std::vector<Peer>::iterator it;
+	json::value jpeerList = json::value::array();
+	for(it = peerList.begin(), cpt = 0 ; it != peerList.end(); ++it, ++cpt )
+	{
+		jpeerList[cpt] = PeerToJson(*it);
+	}
+	jret["peerList"] = jpeerList;
+
+	return jret;
+}
+
+
+File JsonToFile(json::value val)
+{
+	File fret;
+	fret.id = GetJsonString(val,"id");
+	fret.name = GetJsonString(val,"name");
+	fret.size = GetJsonInt(val,"size");
+	fret.body = GetJsonString(val,"body");
+
+	return fret;
+}
+
+std::vector<File> JsonToListFile(json::value val)
+{
+	std::vector<File> lfret;
+	int size = GetJsonInt(val,"size");
+	if(size <= 0)
+		return lfret;
+	
+	json::value jlist = val.at("fileList");
+	int i;
+	for(i = 0; i < size ; ++i)
+		lfret.push_back(JsonToFile(jlist[i]));
+
+	return lfret;
+}
+
+Peer JsonToPeer(json::value val)
+{
+	Peer pret;
+	pret.url = GetJsonString(val,"url");
+	pret.name = GetJsonString(val,"name");
+	pret.fileList = JsonToListFile(val.at("fileList"));
+
+	return pret;
+}
+
+std::vector<Peer> JsonToListPeer(json::value val)
+{
+	std::vector<Peer> lpret;
+	int size = GetJsonInt(val,"size");
+	if(size <= 0)
+		return lpret;
+	
+	json::value jlist = val.at("peerList");
+	int i;
+	for(i = 0; i < size ; ++i)
+		lpret.push_back(JsonToPeer(jlist[i]));
+
+	return lpret;
+}
+
+std::string getIPAddress()
+{
+	std::string myIpAddr = "";
+	try {
+	    string_t response = http_client(U("http://checkip.dyndns.com/"))
+	    						.request(U("GET"))
+	    						.then([] (http_response response) {
+	    							return response.extract_string();
+	    						}).get();
+
+	    std::string body = utility::conversions::to_utf8string(response);
+	    std::size_t pos = body.rfind(":");
+	    myIpAddr = body.substr(pos+2);
+	    pos = myIpAddr.find("<");
+	    myIpAddr.resize(pos);
+
+	}catch(std::exception e)
+	{
+		std::ofstream logFile(CONFIGLOGS,std::ios::app);
+		logFile << "Erreur Get IP: " << e.what() << std::endl;
+		logFile.close();
+		return "";
+	}
+
+    return myIpAddr;
+}

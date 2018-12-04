@@ -4,7 +4,7 @@
 #include<string>
 #include<stdio.h>
 
-#include "../mInterfaceP2P/serviceP2P.h"
+#include "../mInterfaceP2P/serServerP2P.h"
 #include "../mDataClass/configPeer.h"
 
 #define METAF "metafile.json"
@@ -21,7 +21,7 @@ class Serveur
 {
 	public:
 
-	Serveur(ConfigPeer &cf, ServiceP2P &spp);
+	Serveur(ConfigPeer &cf, SerServerP2P &spp);
 	Serveur();
 	~Serveur();
 
@@ -36,7 +36,7 @@ class Serveur
 	static int sauvegarder_fichier(std::string param, json::value entree, json::value& sortie);
 	static int rafraichir_fichier(std::string idFichier, json::value entree, json::value& sortie);
 
-	static ServiceP2P serviceP2P;
+	static SerServerP2P serviceP2P;
 	static ConfigPeer configuration;
 	
 	void ajouter_liste_fichier();

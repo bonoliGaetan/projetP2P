@@ -9,7 +9,7 @@
 #include<cpprest/json.h>
 
 
-#include "../mInterfaceP2P/serviceP2P.h"
+#include "../mInterfaceP2P/serClientP2P.h"
 #include "../mDataClass/peer.h"
 #include "../mDataClass/configPeer.h"
 
@@ -28,11 +28,11 @@ class Client
 	
 	public:
 	Client();
-	Client(ConfigPeer &cf, ServiceP2P &spp);
+	Client(ConfigPeer &cf, SerClientP2P &spp);
 	~Client();
 	
 	ConfigPeer configuration;
-	ServiceP2P serviceP2P;
+	SerClientP2P serviceP2P;
 
 	int enregistrement(std::string param, json::value entree, json::value& sortie);
 	int desenregistrement(std::string urlPair, json::value entree, json::value& sortie);

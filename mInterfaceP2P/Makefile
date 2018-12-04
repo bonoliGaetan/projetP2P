@@ -3,7 +3,7 @@ CFLAGS=-O2 -Wall
 LIBS=-std=c++11 -std=gnu++11 -lcpprest
 OS=
 
-FILES=serviceP2P.o
+FILES=serClientP2P.o serServerP2P.o
 
 all: mInterfaceP2P.o clean
 

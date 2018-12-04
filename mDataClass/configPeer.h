@@ -4,11 +4,15 @@
 #include <iostream>
 #include <string>
 #include <cpprest/json.h>
+#include <cpprest/http_client.h>
 #include <cstdlib>
 
 #include "../mDataClass/peer.h"
 #include "../mDataClass/file.h"
 
+
+using namespace web::http;                  	// Common HTTP functionality
+using namespace web::http::client;          	// HTTP client features 
 using namespace web;
 using namespace web::json;
 using namespace utility; 
@@ -32,6 +36,19 @@ using namespace utility;
 
 std::string GetJsonString(json::value &jval, string_t key);
 int GetJsonInt(json::value &jval, string_t key);
+
+json::value FileToJson(File file);
+json::value ListFileToJson(std::vector<File> &filelist);
+json::value PeerToJson(Peer peer);
+json::value ListPeerToJson(std::vector<Peer> &peerList);
+
+File JsonToFile(json::value file);
+std::vector<File> JsonToListFile(json::value fileList);
+Peer JsonToPeer(json::value peer);
+std::vector<Peer> JsonToListPeer(json::value peerList);
+
+std::string getIPAddress();
+
 
 class ConfigPeer
 {

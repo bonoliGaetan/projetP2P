@@ -1,7 +1,7 @@
 #include "client.h"
 
 
-Client::Client(ConfigPeer &config, ServiceP2P &service)
+Client::Client(ConfigPeer &config, SerClientP2P &service)
 {
 	std::cout<<"DEBUT CLIENT"<<std::endl;
 	serviceP2P = service;

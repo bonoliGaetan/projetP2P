@@ -1,9 +1,9 @@
 #include"serveur.h"
 
-ServiceP2P Serveur::serviceP2P;
+SerServerP2P Serveur::serviceP2P;
 ConfigPeer Serveur::configuration;
 
-Serveur::Serveur(ConfigPeer &config, ServiceP2P &service)
+Serveur::Serveur(ConfigPeer &config, SerServerP2P &service)
 {
 	std::cout<<"DEBUT SERVER"<<std::endl;
 	Serveur::serviceP2P = service;
@@ -18,14 +18,18 @@ Serveur::Serveur(ConfigPeer &config, ServiceP2P &service)
 	configuration.listeFichier = myPeer.fileList;
 	configuration.listePair.push_back(myPeer);
 
+	maj_fichier();
+	supprimer_fichier();
+	ajouter_fichier();
+
+	enregistrer_fichier();
 	ajouter_liste_fichier();
+	
 	ajouter_liste_pair();
 	ajouter_pair();
 	supprimer_pair();
-	ajouter_fichier();
-	supprimer_fichier();
-	enregistrer_fichier();
-	maj_fichier();
+
+	Serveur::serviceP2P.OpenListener();
 
 	std::cout << "Le serveur écoute sur : " << config.myUrl << std::endl;
 	
@@ -34,38 +38,41 @@ Serveur::Serveur(ConfigPeer &config, ServiceP2P &service)
 Serveur::Serveur() { }
 Serveur::~Serveur() 
 {	
-	json::value sval;
+	json::value sval = json::value::object();
 
 	sval["size"] = configuration.listeFichier.size();
 
 	int cpt ;
 	std::vector<File>::iterator it;
 	json::value jfileList = json::value::array();
+	
 	for(it = configuration.listeFichier.begin(), cpt = 0 ; it != configuration.listeFichier.end(); ++it, ++cpt )
 	{
-		jfileList[cpt] = serviceP2P.FileToJson(*it);
-		jfileList[cpt]["body"] = json::value::string(it->body);
+		json::value tmp = json::value::object();
+		tmp = FileToJson(*it);
+		tmp["body"] = json::value::string(it->body);
+		jfileList[cpt] = tmp;
 	}
 	sval["fileList"] = jfileList;
 
 	std::ofstream metafile(METAF,std::ios::out);
-	metafile << sval.serialize();
+	metafile << sval.serialize() << std::endl;
 	metafile.close();
 
-	serviceP2P.CloseAllWaitServer();
+	Serveur::serviceP2P.CloseListener();
 }
 
 int Serveur::obtenir_liste_fichier(std::string param, json::value entree, json::value& sortie)
 {
 	// On envoit la liste des meta donnees
-	sortie = Serveur::serviceP2P.ListFileToJson(Serveur::configuration.listeFichier);
+	sortie = ListFileToJson(Serveur::configuration.listeFichier);
 	return 0;
 }
 
 int Serveur::obtenir_liste_pair(std::string param, json::value entree, json::value& sortie)
 {
 	// On envoit la liste des pair
-	sortie = Serveur::serviceP2P.ListPeerToJson(Serveur::configuration.listePair);
+	sortie = ListPeerToJson(Serveur::configuration.listePair);
 	return 0;
 }
 
@@ -94,7 +101,7 @@ void Serveur::supprimer_pair()
 int Serveur::enregistrement(std::string param, json::value entree, json::value& sortie)
 {
 	// On ajoute un pair a notre liste de pair
-	Peer nouvPaire = Serveur::serviceP2P.JsonToPeer(entree);
+	Peer nouvPaire = JsonToPeer(entree);
 	Serveur::configuration.listePair.push_back(nouvPaire);
 	return 0;
 }
@@ -199,7 +206,7 @@ int Serveur::sauvegarder_fichier(std::string param, json::value entree, json::va
 	logFile << "Save File Meta" << std::endl;
 	logFile.close();
 
-	File fichier = serviceP2P.JsonToFile(entree);
+	File fichier = JsonToFile(entree);
 
 	int max = -1;
 	int actu;
@@ -246,6 +253,9 @@ int Serveur::rafraichir_fichier(std::string idFichier, json::value entree, json:
 			break;
 		}
 	}
+
+	if(i >= Serveur::configuration.listeFichier.size())
+		return -1;
 	
 	std::string chemin = Serveur::configuration.repServer + SL + Serveur::configuration.listeFichier[i].body;
 
@@ -258,7 +268,7 @@ int Serveur::rafraichir_fichier(std::string idFichier, json::value entree, json:
 
 std::vector<File> Serveur::GetFileListFromFile(std::string file)
 {
-	try {
+	
 
 		std::ifstream sfile(file,std::ios::in);
 		if(!sfile)
@@ -269,11 +279,11 @@ std::vector<File> Serveur::GetFileListFromFile(std::string file)
 	    int length = sfile.tellg();
 	    sfile.seekg (0, sfile.beg);
 
-	    char * buffer = new char [length];
+	    char* buffer = new char [length+1];
 
 	    // read data as a block:
 	    sfile.read (buffer,length);
-	    sfile.close();
+	    buffer[length] = '\0';
 
 	    std::ofstream logFile(SERVEURLOGS,std::ios::app);
 	    logFile << buffer << std::endl;
@@ -289,10 +299,11 @@ std::vector<File> Serveur::GetFileListFromFile(std::string file)
 
 	    delete[] buffer;
 
-	    return Serveur::serviceP2P.JsonToListFile(jret);
-	}catch(json::json_exception je)
+	    sfile.close();
+	    return JsonToListFile(jret);
+	/*}catch(json::json_exception je)
 	{
 		std::cout << "Erreur de lecture du fichier de fichiers" << std::endl;
 		exit(0);
-	}
+	}*/
 }

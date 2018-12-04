@@ -37,8 +37,9 @@ int main(int nbarg, char* argv[])
 {	
 
 	ConfigPeer cf(FILECONFIG);
-	ServiceP2P spp(cf);
 	
+	
+
 	if(nbarg < 1)
 		return 0;
 	
@@ -46,14 +47,15 @@ int main(int nbarg, char* argv[])
 
 	if(argv[1][0] == 's')
 	{
-		Serveur serv(cf,spp);
-		sleep(50);
+		SerServerP2P sspp(cf);
+		Serveur serv(cf,sspp);
+		sleep(20);
 
 	}
 	else
 	{
-		
-		Client client(cf,spp);
+		SerClientP2P scpp(cf);
+		Client client(cf,scpp);
 		try {
 			switch(argv[2][0])
 			{

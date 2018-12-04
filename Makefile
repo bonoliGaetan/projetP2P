@@ -20,6 +20,5 @@ appliWindows: $(APPLILIST) main.cpp
 clean:
 	rm -f *.exe
 	rm -f *.o
-	rm -f */*.o
 
 
