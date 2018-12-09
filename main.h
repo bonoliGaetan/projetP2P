@@ -3,17 +3,12 @@
 
 #include <iostream>
 
-
-#include "mDataClass/peer.h"
-#include "mDataClass/file.h"
-#include "mDataClass/configPeer.h"
-
-#include "mInterfaceP2P/serServerP2P.h"
-#include "mInterfaceP2P/serClientP2P.h"
-//#include "mGraphique/fenetre.h"
+#include "mGraphique/fenetre.h"
 
 #include "mClient/client.h"
 #include "mServeur/serveur.h"
+
+#include "mDataClass/configPeer.h"
 
 
 

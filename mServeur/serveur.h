@@ -9,7 +9,6 @@
 
 #define METAF "metafile.json"
 
-
 #if __OPSYS == linux
 	#define SL "/"
 	#define SERVEURLOGS "logs/serverlogs.txt"
@@ -21,11 +20,13 @@ class Serveur
 {
 	public:
 
-	Serveur(ConfigPeer &cf, SerServerP2P &spp);
+	Serveur(ConfigPeer* cf);
 	Serveur();
 	~Serveur();
 
-	std::vector<File> GetFileListFromFile(std::string file);
+	static void GetMetaData(std::string fileName);
+	static void SaveMetaData(std::string fileName);
+
 
 	static int obtenir_liste_fichier(std::string, json::value, json::value&);
 	static int obtenir_liste_pair(std::string param, json::value entree, json::value& sortie);
@@ -37,17 +38,19 @@ class Serveur
 	static int rafraichir_fichier(std::string idFichier, json::value entree, json::value& sortie);
 
 	static SerServerP2P serviceP2P;
-	static ConfigPeer configuration;
+	static ConfigPeer* configuration;
+
+	static std::vector<File> listeFichier;
+	static int spaceUsed;
 	
-	void ajouter_liste_fichier();
-	void ajouter_liste_pair();
-	void ajouter_pair();
-	void supprimer_pair();
-	void ajouter_fichier();
-	void supprimer_fichier();
-	void enregistrer_fichier();
-	void maj_fichier();
-	
+	void SetWaitUpdateFile();
+	void SetWaitSaveFile();
+	void SetWaitDeleteFile();
+	void SetWaitGetFile();
+	void SetWaitUnregister();
+	void SetWaitRegister();
+	void SetWaitGetPeerList();
+	void SetWaitGetFileList();
 	
 };
 

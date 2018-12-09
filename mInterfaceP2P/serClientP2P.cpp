@@ -12,17 +12,21 @@ StError new_StError(int c, std::string s)
 
 SerClientP2P::SerClientP2P() {}
 
-SerClientP2P::SerClientP2P(ConfigPeer &pcf)
+SerClientP2P::SerClientP2P(ConfigPeer* pcf)
 {
+	std::cout << "INIT SERVICE P2P CLIENT" << std::endl;
+
 	this->lastResponse = new_StError(0,"");
 	this->cf = pcf;
 
-	this->myIpAddr_t = utility::conversions::to_string_t(cf.myAddress);
-	this->myPort_t = utility::conversions::to_string_t(cf.myPort);
+	this->myIpAddr_t = utility::conversions::to_string_t(cf->myAddress);
+	this->myPort_t = utility::conversions::to_string_t(cf->myPort);
 
 	std::ofstream logFile(HTTPLOGS,std::ios::trunc);
 	logFile << "";
 	logFile.close();
+
+	printf("SERVICE P2P CLIENT LANCER\n");
 }
 
 SerClientP2P::~SerClientP2P() {}
@@ -87,16 +91,21 @@ File SerClientP2P::GetFile(std::string dest, std::string id)
 
 	File fret;
 	try {
-		fret.id = "-1";
-		fret.size = GetJsonInt(response,"size");
-		fret.body = REPTMP +id +"_" +std::to_string(fret.size);
+
+		fret.name = GetJsonString(response,"name");
+		fret.body = REPTMP +id +"_" +fret.name;
 		
 		std::ofstream sfile(fret.body,std::ios::out);
-	   	sfile << GetJsonString(response,"body");
+	   	sfile << GetJsonString(response,"content");	   	
 	    sfile.close();
-	    fret.id = id;
-	    fret.name = GetJsonString(response,"name");
 
+	    std::ifstream ifile(fret.body,std::ios::in);
+	    ifile.seekg (0, ifile.end);
+	    fret.size = ifile.tellg();
+	    ifile.seekg (0, ifile.beg);
+	    ifile.close();
+
+	    fret.id = id;
 	}catch(std::ofstream::failure ioe)
 	{
 		std::cerr << "Erreur d'écriture du fichier : " << fret.body << std::endl;
@@ -119,7 +128,7 @@ void SerClientP2P::SaveFile(std::string dest, File file)
 {
 	std::string path("/files");
 	std::string method("POST");
-	json::value body = FileToJson(file);
+	json::value body = file.ToJson(0);
 
 	std::ifstream sfile(file.body,std::ios::in);
 	sfile.seekg (0, sfile.end);
@@ -128,9 +137,6 @@ void SerClientP2P::SaveFile(std::string dest, File file)
 
 	json::value response = RequestHttp("http://"+dest,method,path,body);
 
-	file.id = GetJsonString(response,"id");
-	if(file.id == "")
-		return;
 	UpdateFile(dest,file);
 }
 
@@ -151,8 +157,7 @@ void SerClientP2P::UpdateFile(std::string dest, File file)
 	    sfile.read (buffer,length);
 	    sfile.close();
  
- 		body["size"] = length;
-	    body["body"] = json::value::string(buffer);
+	    body["content"] = json::value::string(buffer);
 
 	    delete[] buffer;
 

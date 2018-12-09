@@ -5,13 +5,14 @@
 #include<string>
 #include<vector>
 #include<fstream>
+#include<time.h>
 #include<map>
 #include<cpprest/json.h>
-
 
 #include "../mInterfaceP2P/serClientP2P.h"
 #include "../mDataClass/peer.h"
 #include "../mDataClass/configPeer.h"
+
 
 #if __OPSYS == linux
 	#define SL "/"
@@ -28,10 +29,10 @@ class Client
 	
 	public:
 	Client();
-	Client(ConfigPeer &cf, SerClientP2P &spp);
+	Client(ConfigPeer* cf);
 	~Client();
 	
-	ConfigPeer configuration;
+	ConfigPeer* configuration;
 	SerClientP2P serviceP2P;
 
 	int enregistrement(std::string param, json::value entree, json::value& sortie);
@@ -46,7 +47,9 @@ class Client
 	void desenregistrer_pair_client(std::string dest, std::string url);
 	void maj_fichier_client(std::string dest, File file);
 	
-	std::string affecter_id(int pairId, std::string nomFic, int tailleFic);
+	std::string affecter_id(int pairId, std::string nomFic, int tailleFic, int tailleCle);
+
+	int suppr_peer_if_notfound(std::string url);
 	
 	std::vector<File> obtenir_liste_fichier_d_un_pair(std::string url);
 };

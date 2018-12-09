@@ -33,30 +33,31 @@ int testhandler(std::string paramUrl, json::value dataIn, json::value &dataOut)
 }
 */
 
-int main(int nbarg, char* argv[])
+int main(int argc, char* argv[])
 {	
 
 	ConfigPeer cf(FILECONFIG);
-	
-	
 
-	if(nbarg < 1)
+	if(argc <= 1)
 		return 0;
-	
-
 
 	if(argv[1][0] == 's')
 	{
-		SerServerP2P sspp(cf);
-		Serveur serv(cf,sspp);
+		Serveur serv(&cf);
 		sleep(20);
 
 	}
 	else
 	{
-		SerClientP2P scpp(cf);
-		Client client(cf,scpp);
-		try {
+
+		Client client(&cf);
+		
+		Gtk::Main app(argc, argv);
+	    Fenetre fen(&client);
+	    //fen.Init(client);
+	    Gtk::Main::run(fen);
+	
+		/*try {
 			switch(argv[2][0])
 			{
 				case 'd':
@@ -71,7 +72,7 @@ int main(int nbarg, char* argv[])
 		}catch(std::exception e)
 		{
 			std::cout << e.what() << std::endl;
-		}	
+		}*/
 	}
 	
 	

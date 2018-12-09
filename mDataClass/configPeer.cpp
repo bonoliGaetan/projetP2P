@@ -22,14 +22,13 @@ ConfigPeer::ConfigPeer(std::string file)
 	this->myName = GetJsonString(jconf,NAME);
 	this->id = GetJsonInt(jconf,IDPR);
 
-	srand(this->id);
+	srand(time(NULL));
 	int iPort = rand()%(maxPort - minPort +1) +minPort;
 	this->myPort = std::to_string(iPort);
 
 	this->myUrl = myAddress +":" +myPort;
 
 	this->listePair = std::vector<Peer>();
-	this->listeFichier = std::vector<File>();
 
 }
 ConfigPeer::ConfigPeer() {}
@@ -93,118 +92,56 @@ json::value ConfigPeer::GetJsonFromFile(std::string file)
 	}
 }
 
-
-
-json::value FileToJson(File file)
-{
-	json::value jret;
-
-	jret["id"] = json::value::string(file.id);
-	jret["name"] = json::value::string(file.name);
-	jret["size"] = file.size;
-	jret["body"] = json::value::string(file.body);
-
-	return jret;
-}
-
 json::value ListFileToJson(std::vector<File> &fileList)
 {
-	if(fileList.size() <= 0)
-		return json::value();
-
-	json::value jret;
-	jret["size"] = fileList.size();
+	json::value jret = json::value::object();
 
 	int cpt;
 	std::vector<File>::iterator it;
 	json::value jfileList = json::value::array();
 	for(it = fileList.begin(), cpt = 0 ; it != fileList.end(); ++it, ++cpt )
 	{
-		jfileList[cpt] = FileToJson(*it);
+		jfileList[cpt] = it->ToJson(0);
 	}
-	jret["fileList"] = jfileList;
-
-	return jret;
-}
-
-json::value PeerToJson(Peer peer)
-{
-	json::value jret;
-	jret["url"] = json::value::string(peer.url);
-	jret["name"] = json::value::string(peer.name);
-	jret["fileList"] = ListFileToJson(peer.fileList);
+	jret["list"] = jfileList;
 
 	return jret;
 }
 
 json::value ListPeerToJson(std::vector<Peer> &peerList)
 {
-	if(peerList.size() <= 0)
-		return json::value();
-
-	json::value jret;
-	jret["size"] = peerList.size();
+	json::value jret = json::value::object();
 
 	int cpt ;
 	std::vector<Peer>::iterator it;
 	json::value jpeerList = json::value::array();
 	for(it = peerList.begin(), cpt = 0 ; it != peerList.end(); ++it, ++cpt )
 	{
-		jpeerList[cpt] = PeerToJson(*it);
+		jpeerList[cpt] = it->ToJson();
 	}
-	jret["peerList"] = jpeerList;
+	jret["list"] = jpeerList;
 
 	return jret;
-}
-
-
-File JsonToFile(json::value val)
-{
-	File fret;
-	fret.id = GetJsonString(val,"id");
-	fret.name = GetJsonString(val,"name");
-	fret.size = GetJsonInt(val,"size");
-	fret.body = GetJsonString(val,"body");
-
-	return fret;
 }
 
 std::vector<File> JsonToListFile(json::value val)
 {
 	std::vector<File> lfret;
-	int size = GetJsonInt(val,"size");
-	if(size <= 0)
-		return lfret;
 	
 	json::value jlist = val.at("list");
-	int i;
-	for(i = 0; i < size ; ++i)
+	for(int i = 0; jlist[i] != json::value::null() ; ++i)
 		lfret.push_back(File::FromJson(jlist[i]));
 
 	return lfret;
 }
 
-Peer JsonToPeer(json::value val)
-{
-	Peer pret;
-	pret.url = GetJsonString(val,"url");
-	pret.name = GetJsonString(val,"name");
-	pret.fileList = JsonToListFile(val.at("fileList"));
-
-	return pret;
-}
-
 std::vector<Peer> JsonToListPeer(json::value val)
 {
 	std::vector<Peer> lpret;
-	int size = GetJsonInt(val,"size");
-	if(size <= 0)
-		return lpret;
 	
-	json::value jlist = val.at("peerList");
-	int i;
-	for(i = 0; i < size ; ++i)
-		lpret.push_back(JsonToPeer(jlist[i]));
+	json::value jlist = val.at("list");
+	for(int i = 0; jlist[i] != json::value::null() ; ++i)
+		lpret.push_back(Peer::FromJson(jlist[i]));
 
 	return lpret;
 }

@@ -1,11 +1,13 @@
 #include "client.h"
 
 
-Client::Client(ConfigPeer &config, SerClientP2P &service)
+Client::Client(ConfigPeer* config)
 {
 	std::cout<<"DEBUT CLIENT"<<std::endl;
-	serviceP2P = service;
-	configuration = config;
+	this->serviceP2P = SerClientP2P(config);
+	this->configuration = config;
+
+	printf("CLIENT LANCER\n");
 }
 
 Client::Client() { };
@@ -16,23 +18,39 @@ Client::~Client()
 
 void Client::obtenir_liste_pair_client(std::string dest)
 {
+
 	std::vector<Peer> liste = serviceP2P.GetPeerList(dest);
-	
-	for(unsigned int i = 0; i < liste.size(); i++)
+
+	if(suppr_peer_if_notfound(dest))
+		return;
+
+	std::vector<Peer>::iterator it;
+	std::vector<Peer>::iterator it2;
+	for(it = liste.begin(); it != liste.end(); ++it)
 	{
-		configuration.listePair.push_back(liste[i]);
+		for(it2 = configuration->listePair.begin(); it2 != configuration->listePair.end(); ++it2)
+			if(it->url == it2->url)
+				break;
+		if(it2 == configuration->listePair.end())
+		{
+			configuration->listePair.push_back(*it);
+		}
 	}
 }
 
 void Client::obtenir_liste_fichier_client(std::string dest)
 {
 	std::vector<File> liste = serviceP2P.GetFileList(dest);
+	if(suppr_peer_if_notfound(dest))
+		return;
 	
-	for(unsigned int i = 0; i < configuration.listePair.size(); i++)
+	std::vector<Peer>::iterator it;
+
+	for(it = configuration->listePair.begin(); it != configuration->listePair.end(); ++it)
 	{
-		if(configuration.listePair[i].url == dest)
+		if(it->url == dest)
 		{
-			configuration.listePair[i].fileList = liste;
+			it->fileList = liste;
 		}
 	}
 }
@@ -40,7 +58,12 @@ void Client::obtenir_liste_fichier_client(std::string dest)
 void Client::obtenir_fichier_client(std::string dest, std::string id)
 {
 	File fichier = serviceP2P.GetFile(dest,id);
+
+	if(suppr_peer_if_notfound(dest))
+		return;
 	
+	//sauvegarder_fichier_client(configuration->myUrl,fichier);
+
 	std::ifstream fic(fichier.body,std::ios::in);
 	    
 	fic.seekg (0, fic.end);
@@ -52,7 +75,7 @@ void Client::obtenir_fichier_client(std::string dest, std::string id)
 	fic.read (buffer,length);
 	fic.close();
 	
-	std::string chemin = configuration.repClient +SL +fichier.id +"_" +fichier.name;
+	std::string chemin = configuration->repClient +SL +fichier.id +"_" +fichier.name;
 	std::ofstream nouvFichier(chemin,std::ios::out);
 	nouvFichier << std::string(buffer);
 	nouvFichier.close();
@@ -65,66 +88,82 @@ void Client::obtenir_fichier_client(std::string dest, std::string id)
 void Client::supprimer_fichier_client(std::string dest,std::string id)
 {
 	serviceP2P.DeleteFile(dest,id);
+
+	if(suppr_peer_if_notfound(dest))
+		return;
 	
-	std::vector<File> nouvListe = serviceP2P.GetFileList(dest);
-	
-	std::string nomFichier;
-	int j =0;
-	
-	for(int i = 0; configuration.listePair.size(); i++)
-	{
-		if(configuration.listePair[i].url == id)
-		{
-			configuration.listePair[i].fileList = nouvListe;
-			j = i;
-			break;
-		}
-	}
-	
-	for(unsigned int i = 0; i < configuration.listePair[j].fileList.size(); i++)
-	{
-		if(configuration.listePair[j].fileList[i].id == id)
-		{
-			nomFichier = configuration.listePair[j].fileList[i].name;
-			configuration.listePair[j].fileList.erase(configuration.listePair[j].fileList.begin()+i);
-		}
-	}	
+	obtenir_liste_fichier_d_un_pair(dest);
+
 }
 
 void Client::sauvegarder_fichier_client(std::string dest, File file)
 {
+	std::ifstream fic(file.body,std::ios::in);
+
+	fic.seekg (0, fic.end);
+	file.size = fic.tellg();
+	fic.seekg (0, fic.beg);
+
+	fic.close();
+
+	file.id = affecter_id(configuration->id,file.name,file.size,10);
 	serviceP2P.SaveFile(dest,file);
+
+	suppr_peer_if_notfound(dest);
 }
 
 void Client::maj_fichier_client(std::string dest, File file)
 {
 	serviceP2P.UpdateFile(dest,file);
+
+	suppr_peer_if_notfound(dest);
 }
 
 void Client::enregistrer_pair_client(std::string dest, std::string url)
 {
 	serviceP2P.RegisterPeer(dest, url);
+
+	suppr_peer_if_notfound(dest);
 }
 
 void Client::desenregistrer_pair_client(std::string dest, std::string url)
 {
 	serviceP2P.UnregisterPeer(dest, url);
+
+	suppr_peer_if_notfound(dest);
 }
 
 std::vector<File> Client::obtenir_liste_fichier_d_un_pair(std::string url)
 {
-	for(unsigned int i = 0; i < configuration.listePair.size(); i++)
+	for(unsigned int i = 0; i < configuration->listePair.size(); i++)
 	{
-		if(configuration.listePair[i].url == url)
+		if(configuration->listePair[i].url == url)
 		{
-			return configuration.listePair[i].fileList;
+			return configuration->listePair[i].fileList;
 		}
 	}
 	return std::vector<File>();
 }
 
+int Client::suppr_peer_if_notfound(std::string url)
+{
+	if(serviceP2P.lastResponse.code == -1)
+	{
+		std::vector<Peer>::iterator it;
+		for( it = configuration->listePair.begin(); it != configuration->listePair.end(); ++it)
+		{
+			if(it->url == url)
+			{
+				configuration->listePair.erase(it);
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
 
-std::string Client::affecter_id(int pairId, std::string nomFic, int tailleFic)
+
+std::string Client::affecter_id(int pairId, std::string nomFic, int tailleFic, int taille)
 {
 	char carac[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	const char* nom = nomFic.c_str();
@@ -143,14 +182,14 @@ std::string Client::affecter_id(int pairId, std::string nomFic, int tailleFic)
 	srand(graine);
 	
 	int alea;
-	char chaine[10];
+	char chaine[taille+1];
 	
-	for(int j = 0; j < 10 ; j++)
+	for(int j = 0; j < taille ; j++)
 	{
 		alea = rand()%62;
 		chaine[j] = carac[alea];
 	}
-	
+	chaine[taille] = '\0';
 	std::string resultat = chaine;
 	
 	return resultat;

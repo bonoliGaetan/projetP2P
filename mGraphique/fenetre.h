@@ -7,48 +7,52 @@
 #define LARGEUR 1200
 #define HAUTEUR 800
 
+#include "../mClient/client.h"
+#include "../mServeur/serveur.h"
 
 #include "../mDataClass/peer.h"
 #include "../mDataClass/file.h"
-
-#include "../mClient/client.h"
-
 
 
 
 class Fenetre : public Gtk::Window
 {
     public :
-        Fenetre(Client pclt, std::string title);
+
         ~Fenetre();
+
+        Fenetre(Client*);
+
         void afficherDialogue();
         
+        
+         void FBQuitter();
 
-        static void FBQuitter();
-
-        static void FBRegister();
-    	static void FBUnregister();
+         void FBRegister();
+    	 void FBUnregister();
     	
-    	static void FBGetPeerList(std::string peer);
-		static void FBGetFileList(std::string peer);
+    	 void FBGetPeerList(std::string peer);
+		 void FBGetFileList(std::string peer);
 
-		static void FBGetFile(std::string id);
-		static void FBSaveFile();
-		static void FBDeleteFile(std::string id);
+		 void FBGetFile(std::string id);
+		 void FBFindFile();
+         void FBSendFile(std::string peer);
+		 void FBDeleteFile(std::string id);
 
-		static void PeerSelectChanged();
+		 void PeerSelectChanged();
 
     private :
 
-    	Client clt;
+    	Client* client;
+        Serveur* serveur;
 
     	void SetModel();
 
     	void SetButtons();
     	void AddButtons();
 
-    	Gtk::VBox* SetListPeer(std::vector<Peer> pl);
-		Gtk::VBox* SetListFile(std::vector<File> fl);
+    	Gtk::HButtonBox* SetListPeer(std::vector<Peer> pl);
+		Gtk::HButtonBox* SetListFile(std::vector<File> fl);
 
 		void FBDisplayFiles(std::string peer);
 
@@ -63,16 +67,19 @@ class Fenetre : public Gtk::Window
 		Gtk::Button* BGetFileList;
 
 		Gtk::Button* BGetFile;
-		Gtk::Button* BSaveFile;
+		Gtk::Button* BFindFile;
+        Gtk::Button* BSendFile;
 		Gtk::Button* BDeleteFile;
     	
 		Gtk::Entry* ETextePeer;
+        Gtk::Entry* ETexteFile;
 
 		Gtk::ScrolledWindow* ScrollPeer;
 		Gtk::ScrolledWindow* ScrollFile;
-    	Gtk::VBox* BPeerList;
-    	Gtk::VBox* BFileList;
+    	Gtk::HButtonBox* BPeerList;
+    	Gtk::HButtonBox* BFileList;
 
+        Gtk::Alignment* align;
 };
 
 

@@ -76,7 +76,6 @@ public:
 	void affData();
 
 	std::vector<Peer> listePair;
-	std::vector<File> listeFichier;
 };
 
 #endif

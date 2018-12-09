@@ -3,12 +3,12 @@
 
 SerServerP2P::SerServerP2P() {}
 
-SerServerP2P::SerServerP2P(ConfigPeer &pcf)
+SerServerP2P::SerServerP2P(ConfigPeer* pcf)
 {
 	this->cf = pcf; 
 
-	this->myIpAddr_t = utility::conversions::to_string_t(cf.myAddress);
-	this->myPort_t = utility::conversions::to_string_t(cf.myPort);
+	this->myIpAddr_t = utility::conversions::to_string_t(cf->myAddress);
+	this->myPort_t = utility::conversions::to_string_t(cf->myPort);
 
 	this->requestTree = json::value::object();
 	requestTree["GET"] = json::value::object();
@@ -22,31 +22,39 @@ SerServerP2P::SerServerP2P(ConfigPeer &pcf)
 	std::ofstream logFile2(INTERLOGS,std::ios::trunc);
 	logFile2<< "";
 	logFile2.close();
+
+	this->serverListener = NULL;
 }
 
 SerServerP2P::~SerServerP2P() 
 {
-	if(this->serverListener != NULL)
-		CloseListener();
+	CloseListener();
 }
 
 void SerServerP2P::OpenListener()
 {
-	if(this->serverListener != NULL)
+	try {
 		CloseListener();
 
-	this->serverListener = new http_listener("http://0.0.0.0:" +cf.myPort);
-	serverListener->support("GET",[=] (http_request req) { traiterRequete(req); });
-	serverListener->support("POST",[=] (http_request req) { traiterRequete(req); });
-	serverListener->support("DELETE",[=] (http_request req) { traiterRequete(req); });
+		this->serverListener = new http_listener("http://0.0.0.0:" +cf->myPort);
+		serverListener->support("GET",[=] (http_request req) { traiterRequete(req); });
+		serverListener->support("POST",[=] (http_request req) { traiterRequete(req); });
+		serverListener->support("DELETE",[=] (http_request req) { traiterRequete(req); });
 
-	this->serverListener->open().wait();
+		this->serverListener->open().wait();
+	} catch(std::exception e)
+	{
+		exit(0);
+	}
 }
 void SerServerP2P::CloseListener()
 {
-	this->serverListener->close();
-	delete this->serverListener;
-	this->serverListener = NULL;
+	if(this->serverListener != NULL)
+	{
+		this->serverListener->close();
+		delete this->serverListener;
+		this->serverListener = NULL;
+	}
 }
 
 
@@ -88,7 +96,9 @@ void SerServerP2P::traiterRequete(http_request req)
 
 	}catch(http_exception he)
 	{
-		std::cout << "Erreur HTTP: " << he.what() << std::endl;
+		std::ofstream logFile(HTTPLOGS,std::ios::app);
+		logFile << "Erreur HTTP: " << he.what() << std::endl;
+		logFile.close();
 	}
 
 }
@@ -177,7 +187,6 @@ int SerServerP2P::getRequestTree(std::string url, std::string method, std::strin
 				{
 					paramUrl = paths[cpt];
 					tmp = tmp["*"];
-					break;
 				} else
 				{
 					return -1;

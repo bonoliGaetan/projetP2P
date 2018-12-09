@@ -46,12 +46,12 @@
 	{
 	public:
 
-		SerClientP2P(ConfigPeer &pcf);
+		SerClientP2P(ConfigPeer* pcf);
 		SerClientP2P();
 		~SerClientP2P();
 
 		StError lastResponse;
-		ConfigPeer cf;
+		ConfigPeer* cf;
 
 		std::vector<Peer> GetPeerList(std::string dest);
 		std::vector<File> GetFileList(std::string dest);

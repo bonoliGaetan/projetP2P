@@ -35,11 +35,11 @@
 	{
 	public:
 
-		SerServerP2P(ConfigPeer &pcf);
+		SerServerP2P(ConfigPeer* pcf);
 		SerServerP2P();
 		~SerServerP2P();
 
-		ConfigPeer cf;
+		ConfigPeer* cf;
 
 		void WaitRegister(int fctTraitement(std::string, json::value, json::value&));
 		void WaitUnregister(int fctTraitement(std::string, json::value, json::value&));

@@ -1,20 +1,20 @@
 #include "peer.h"
 
+
+Peer::Peer(std::string url)
+{
+	this->url = url;
+	this->fileList = std::vector<File>();
+}
+
+
 json::value Peer::ToJson()
 {
-	json::value jret = json::value::object();
-
-	jret["url"] = json::value::string(this->url);
-
-	return jret;
+	return json::value::string(this->url);
 }
 
 
 Peer Peer::FromJson(json::value jpar)
 {
-	Peer fret;
-
-	fret.url = GetJsonString(jpar,"url");
-
-	return fret;
+	return Peer(GetJsonString(jpar,"url"));
 }

@@ -13,6 +13,9 @@ using namespace web::json;
 class Peer
 {
 	public:
+
+	Peer(std::string url);
+
 	std::string url;
 	std::string name;
 	std::vector<File> fileList;
