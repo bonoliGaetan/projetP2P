@@ -16,5 +16,5 @@ json::value Peer::ToJson()
 
 Peer Peer::FromJson(json::value jpar)
 {
-	return Peer(GetJsonString(jpar,"url"));
+	return Peer(utility::conversions::to_utf8string(jpar.as_string()));
 }

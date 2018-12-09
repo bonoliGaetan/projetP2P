@@ -59,7 +59,7 @@
 
 		string_t myIpAddr_t;
 		string_t myPort_t;
-
+		bool isClosed;
 		http_listener* serverListener;
 
 		json::value requestTree;

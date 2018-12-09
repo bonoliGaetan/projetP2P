@@ -3,39 +3,37 @@
 
 Client::Client(ConfigPeer* config)
 {
-	std::cout<<"DEBUT CLIENT"<<std::endl;
 	this->serviceP2P = SerClientP2P(config);
 	this->configuration = config;
 
-	printf("CLIENT LANCER\n");
+	this->listePair = std::vector<Peer>();
 }
 
 Client::Client() { };
 Client::~Client()
 {
-	std::cout<<"FIN"<<std::endl;
+
 }
 
 void Client::obtenir_liste_pair_client(std::string dest)
 {
+		std::vector<Peer> liste = serviceP2P.GetPeerList(dest);
 
-	std::vector<Peer> liste = serviceP2P.GetPeerList(dest);
+		if(suppr_peer_if_notfound(dest))
+			return;
 
-	if(suppr_peer_if_notfound(dest))
-		return;
-
-	std::vector<Peer>::iterator it;
-	std::vector<Peer>::iterator it2;
-	for(it = liste.begin(); it != liste.end(); ++it)
-	{
-		for(it2 = configuration->listePair.begin(); it2 != configuration->listePair.end(); ++it2)
-			if(it->url == it2->url)
-				break;
-		if(it2 == configuration->listePair.end())
+		std::vector<Peer>::iterator it;
+		std::vector<Peer>::iterator it2;
+		for(it = liste.begin(); it != liste.end(); ++it)
 		{
-			configuration->listePair.push_back(*it);
+			for(it2 = listePair.begin(); it2 != listePair.end(); ++it2)
+				if(it->url == it2->url)
+					break;
+			if(it2 == listePair.end())
+			{
+				listePair.push_back(*it);
+			}
 		}
-	}
 }
 
 void Client::obtenir_liste_fichier_client(std::string dest)
@@ -46,7 +44,7 @@ void Client::obtenir_liste_fichier_client(std::string dest)
 	
 	std::vector<Peer>::iterator it;
 
-	for(it = configuration->listePair.begin(); it != configuration->listePair.end(); ++it)
+	for(it = listePair.begin(); it != listePair.end(); ++it)
 	{
 		if(it->url == dest)
 		{
@@ -135,11 +133,13 @@ void Client::desenregistrer_pair_client(std::string dest, std::string url)
 
 std::vector<File> Client::obtenir_liste_fichier_d_un_pair(std::string url)
 {
-	for(unsigned int i = 0; i < configuration->listePair.size(); i++)
+	std::vector<Peer>::iterator it;
+
+	for(it = listePair.begin(); it != listePair.end(); ++it)
 	{
-		if(configuration->listePair[i].url == url)
+		if(it->url == url)
 		{
-			return configuration->listePair[i].fileList;
+			return it->fileList;
 		}
 	}
 	return std::vector<File>();
@@ -150,11 +150,11 @@ int Client::suppr_peer_if_notfound(std::string url)
 	if(serviceP2P.lastResponse.code == -1)
 	{
 		std::vector<Peer>::iterator it;
-		for( it = configuration->listePair.begin(); it != configuration->listePair.end(); ++it)
+		for( it = listePair.begin(); it != listePair.end(); ++it)
 		{
 			if(it->url == url)
 			{
-				configuration->listePair.erase(it);
+				listePair.erase(it);
 				return 1;
 			}
 		}

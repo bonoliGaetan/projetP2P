@@ -35,8 +35,7 @@ class Client
 	ConfigPeer* configuration;
 	SerClientP2P serviceP2P;
 
-	int enregistrement(std::string param, json::value entree, json::value& sortie);
-	int desenregistrement(std::string urlPair, json::value entree, json::value& sortie);
+	std::vector<Peer> listePair;
 	
 	void obtenir_liste_pair_client(std::string dest);
 	void obtenir_liste_fichier_client(std::string dest);

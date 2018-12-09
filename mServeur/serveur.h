@@ -37,10 +37,11 @@ class Serveur
 	static int sauvegarder_fichier(std::string param, json::value entree, json::value& sortie);
 	static int rafraichir_fichier(std::string idFichier, json::value entree, json::value& sortie);
 
-	static SerServerP2P serviceP2P;
+	static SerServerP2P* serviceP2P;
 	static ConfigPeer* configuration;
 
 	static std::vector<File> listeFichier;
+	static std::vector<Peer> listePair;
 	static int spaceUsed;
 	
 	void SetWaitUpdateFile();
@@ -51,6 +52,9 @@ class Serveur
 	void SetWaitRegister();
 	void SetWaitGetPeerList();
 	void SetWaitGetFileList();
+
+	void Open();
+	void Close();
 	
 };
 

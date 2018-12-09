@@ -38,41 +38,26 @@ int main(int argc, char* argv[])
 
 	ConfigPeer cf(FILECONFIG);
 
-	if(argc <= 1)
-		return 0;
-
-	if(argv[1][0] == 's')
+	if((argc > 1)&&(argv[1][0] == 's'))
 	{
 		Serveur serv(&cf);
-		sleep(20);
+		serv.Open();
+		std::string c;
+		do {
+			std::cin >> c;
+		}while(c != "exit");
 
 	}
 	else
 	{
-
 		Client client(&cf);
-		
+		//Serveur serveur(&cf);
+
 		Gtk::Main app(argc, argv);
 	    Fenetre fen(&client);
 	    //fen.Init(client);
 	    Gtk::Main::run(fen);
 	
-		/*try {
-			switch(argv[2][0])
-			{
-				case 'd':
-					client.obtenir_fichier_client(argv[3],argv[4]);
-					break;
-				case 'u':
-					File f;
-					f.body = argv[4];
-					f.name = argv[4];
-					client.sauvegarder_fichier_client(argv[3],f);
-			}
-		}catch(std::exception e)
-		{
-			std::cout << e.what() << std::endl;
-		}*/
 	}
 	
 	

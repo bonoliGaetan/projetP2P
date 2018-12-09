@@ -14,8 +14,6 @@ SerClientP2P::SerClientP2P() {}
 
 SerClientP2P::SerClientP2P(ConfigPeer* pcf)
 {
-	std::cout << "INIT SERVICE P2P CLIENT" << std::endl;
-
 	this->lastResponse = new_StError(0,"");
 	this->cf = pcf;
 
@@ -25,8 +23,6 @@ SerClientP2P::SerClientP2P(ConfigPeer* pcf)
 	std::ofstream logFile(HTTPLOGS,std::ios::trunc);
 	logFile << "";
 	logFile.close();
-
-	printf("SERVICE P2P CLIENT LANCER\n");
 }
 
 SerClientP2P::~SerClientP2P() {}
@@ -59,7 +55,7 @@ json::value SerClientP2P::RequestHttp(std::string pdest,std::string pmethod, std
 
 		return rep;
 
-	} catch(http_exception e)
+	} catch(std::exception e)
 	{
 		logFile.open(HTTPLOGS,std::ios::app);
 		logFile << "Erreur Client Reply: " << e.what() << std::endl;
@@ -67,7 +63,7 @@ json::value SerClientP2P::RequestHttp(std::string pdest,std::string pmethod, std
 		this->lastResponse = new_StError(-1,e.what());
 	} 
 
-	return json::value();
+	return json::value::object();
 }
 
 std::vector<Peer> SerClientP2P::GetPeerList(std::string dest)
@@ -91,6 +87,16 @@ File SerClientP2P::GetFile(std::string dest, std::string id)
 
 	File fret;
 	try {
+
+		if(lastResponse.code == -1)
+		{
+			fret.id = -1;
+			fret.name = "";
+			fret.body = "";
+			fret.size = 0;
+
+			return fret;
+		}
 
 		fret.name = GetJsonString(response,"name");
 		fret.body = REPTMP +id +"_" +fret.name;
@@ -136,6 +142,9 @@ void SerClientP2P::SaveFile(std::string dest, File file)
 	sfile.close();
 
 	json::value response = RequestHttp("http://"+dest,method,path,body);
+
+	if(lastResponse.code == -1)
+		return;
 
 	UpdateFile(dest,file);
 }
@@ -197,6 +206,9 @@ std::vector<File> SerClientP2P::GetFileList(std::string dest)
 	json::value body = json::value();
 
 	json::value response = RequestHttp("http://"+dest,method,path,body);
+
+	if(lastResponse.code == -1)
+		return std::vector<File>();
 
 	return JsonToListFile(response);
 }

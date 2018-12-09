@@ -28,8 +28,8 @@ class Fenetre : public Gtk::Window
         
          void FBQuitter();
 
-         void FBRegister();
-    	 void FBUnregister();
+         void FBRegister(std::string url);
+    	 void FBUnregister(std::string url);
     	
     	 void FBGetPeerList(std::string peer);
 		 void FBGetFileList(std::string peer);
@@ -41,18 +41,25 @@ class Fenetre : public Gtk::Window
 
 		 void PeerSelectChanged();
 
+         void FBOpenServeur();
+         void FBCloseServeur();
+
     private :
 
     	Client* client;
         Serveur* serveur;
+
+        std::string urlSelec;
 
     	void SetModel();
 
     	void SetButtons();
     	void AddButtons();
 
-    	Gtk::HButtonBox* SetListPeer(std::vector<Peer> pl);
-		Gtk::HButtonBox* SetListFile(std::vector<File> fl);
+        void MajListFile(std::vector<File> fl);
+        void MajListPeer(std::vector<Peer> pl);
+    	Gtk::Grid* SetListPeer(std::vector<Peer> pl);
+		Gtk::Grid* SetListFile(std::vector<File> fl);
 
 		void FBDisplayFiles(std::string peer);
 
@@ -60,15 +67,17 @@ class Fenetre : public Gtk::Window
 
     	Gtk::Button* BQuitter;
 
-    	Gtk::Button* BRegister;
-    	Gtk::Button* BUnregister;
-    	
+        Gtk::Button* BFindFile;
+
+        Gtk::Button* BGetPeerListEntry;
+
     	Gtk::Button* BGetPeerList;
 		Gtk::Button* BGetFileList;
+        Gtk::Button* BRegister;
+        Gtk::Button* BUnregister;
+        Gtk::Button* BSendFile;
 
 		Gtk::Button* BGetFile;
-		Gtk::Button* BFindFile;
-        Gtk::Button* BSendFile;
 		Gtk::Button* BDeleteFile;
     	
 		Gtk::Entry* ETextePeer;
@@ -76,10 +85,13 @@ class Fenetre : public Gtk::Window
 
 		Gtk::ScrolledWindow* ScrollPeer;
 		Gtk::ScrolledWindow* ScrollFile;
-    	Gtk::HButtonBox* BPeerList;
-    	Gtk::HButtonBox* BFileList;
+        Gtk::Grid* BFileList;
+        Gtk::Grid* BPeerList;
 
         Gtk::Alignment* align;
+
+        Gtk::Button* BOpenServeur;
+        Gtk::Button* BCloseServeur;
 };
 
 

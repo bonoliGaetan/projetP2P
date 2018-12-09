@@ -74,8 +74,6 @@ public:
 
 	json::value GetJsonFromFile(std::string file);
 	void affData();
-
-	std::vector<Peer> listePair;
 };
 
 #endif

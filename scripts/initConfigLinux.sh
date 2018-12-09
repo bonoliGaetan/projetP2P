@@ -11,7 +11,7 @@ echo '"Taille_max_repertoire_Serveur":10000000,' >> config.json
 echo '"Ip_init_Serveur":"",' >> config.json
 echo '"Ip_address_client":"",' >> config.json
 echo '"Port_min":5000,' >> config.json
-echo '"Port_max":5000,' >> config.json
+echo '"Port_max":5100,' >> config.json
 echo '"Nom":"",'>> config.json
 echo '"id_pair":1000' >> config.json
 echo '}' >> config.json

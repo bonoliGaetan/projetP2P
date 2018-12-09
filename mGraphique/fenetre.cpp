@@ -2,18 +2,19 @@
 
 Fenetre::~Fenetre()
 {
-	delete this->serveur;
+	std::cout << "END FENETRE" << std::endl;
 }
 
 Fenetre::Fenetre(Client* pclt)
 {
-	printf("INIT FENETRE\n");
 
 	this->client = pclt;
-	this->serveur = new Serveur(pclt->configuration);
+	this->serveur = NULL;
+
+	this->urlSelec = std::string("");
 
 	this->set_title(client->configuration->myUrl);
-	this->set_default_size(0,1000);
+	this->set_default_size(0,500);
 	//this->set_default_size(LARGEUR, HAUTEUR);
 	this->align = new Gtk::Alignment(Gtk::ALIGN_CENTER,Gtk::ALIGN_CENTER,0,1);
 	this->add(*align);
@@ -35,195 +36,244 @@ Gtk::Button* Fenetre::SetButton(std::string name, void fctClicked())
 	return bret;
 }
 
-Gtk::HButtonBox* Fenetre::SetListPeer(std::vector<Peer> pl)
+Gtk::Grid* Fenetre::SetListPeer(std::vector<Peer> pl)
 {
-	Gtk::HButtonBox* bret = new Gtk::HButtonBox(Gtk::BUTTONBOX_SPREAD,2);
-
-	Gtk::VButtonBox* col1 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-	Gtk::VButtonBox* col2 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-	Gtk::VButtonBox* col3 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-	Gtk::VButtonBox* col4 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-	Gtk::VButtonBox* col5 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-
-	for(std::vector<Peer>::iterator it = pl.begin(); it != pl.end(); ++it)
+	Gtk::Grid* bret = new Gtk::Grid();
+	//bret->set_row_homogeneous(true);
+	bret->set_column_homogeneous(true);
+	
+	int i;
+	std::vector<Peer>::iterator it;
+	for(it = pl.begin(), i = 0; it != pl.end(); ++it, ++i)
 	{
 		Gtk::Label* lid = new Gtk::Label(it->url);
 		std::string url = it->url;
 		Gtk::Button* bgetpeerlist = new Gtk::Button("GetPeerList");
-			bgetpeerlist->signal_clicked().connect([=]() { FBGetPeerList(url); } );
+			bgetpeerlist->signal_clicked().connect([this,url]() { FBGetPeerList(url); } );
 		Gtk::Button* bgetfilelist = new Gtk::Button("GetFileList");
-			bgetfilelist->signal_clicked().connect([=]() { FBGetFileList(url); } );
+			bgetfilelist->signal_clicked().connect([this,url]() { FBGetFileList(url); } );
 		Gtk::Button* bafffilelist = new Gtk::Button("Display File");
-			bafffilelist->signal_clicked().connect([=]() { FBDisplayFiles(url); } );
+			bafffilelist->signal_clicked().connect([this,url]() { FBDisplayFiles(url); } );
 		Gtk::Button* bsendfile = new Gtk::Button("Send File");
-			bsendfile->signal_clicked().connect([=]() { FBSendFile(url); } );
+			bsendfile->signal_clicked().connect([this,url]() { FBSendFile(url); } );
+		Gtk::Button* bregister = new Gtk::Button("Register");
+			bregister->signal_clicked().connect([this,url]() { FBRegister(url); } );
+		Gtk::Button* bunregister = new Gtk::Button("Unregister");
+			bunregister->signal_clicked().connect([this,url]() { FBUnregister(url); } );
 
-		col1->pack_start(*lid);
-		col2->pack_start(*bgetpeerlist);
-		col3->pack_start(*bgetfilelist);
-		col4->pack_start(*bafffilelist);
-		col5->pack_start(*bsendfile);
+		bret->attach(*lid,0,i,1,1);
+		bret->attach(*bgetpeerlist,1,i,1,1);
+		bret->attach(*bgetfilelist,2,i,1,1);
+		bret->attach(*bregister,3,i,1,1);
+		bret->attach(*bunregister,4,i,1,1);
+		bret->attach(*bafffilelist,5,i,1,1);
+		bret->attach(*bsendfile,6,i,1,1);
+
 	}
-
-	bret->pack_start(*col1);
-	bret->pack_end(*col2);
-	bret->pack_end(*col3);
-	bret->pack_end(*col4);
-	bret->pack_end(*col5);
 
 	return bret;
 }
 
 
-Gtk::HButtonBox* Fenetre::SetListFile(std::vector<File> fl)
+Gtk::Grid* Fenetre::SetListFile(std::vector<File> fl)
 {
-	Gtk::HButtonBox* bret = new Gtk::HButtonBox(Gtk::BUTTONBOX_SPREAD,2);
+	Gtk::Grid* bret = new Gtk::Grid();
+	//bret->set_row_homogeneous(true);
+	bret->set_column_homogeneous(true);
 
-	Gtk::VButtonBox* col1 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-	Gtk::VButtonBox* col2 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-	Gtk::VButtonBox* col3 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-	Gtk::VButtonBox* col4 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-	Gtk::VButtonBox* col5 = new Gtk::VButtonBox(Gtk::BUTTONBOX_START,2);
-
-	for(std::vector<File>::iterator it = fl.begin(); it != fl.end(); ++it)
+	int i;
+	std::vector<File>::iterator it;
+	for(it = fl.begin(), i = 0; it != fl.end(); ++it, ++i)
 	{
 		Gtk::Label* lid = new Gtk::Label(it->id);
-		std::string id;
+		std::string id = it->id;
 		Gtk::Label* lname = new Gtk::Label(it->name);
 		Gtk::Label* lsize = new Gtk::Label(std::to_string(it->size));
 		Gtk::Button* bgetfile = new Gtk::Button("GetFile");
-			bgetfile->signal_clicked().connect([=]() { FBGetFile(id); } );
+			bgetfile->signal_clicked().connect([this,id]() { FBGetFile(id); } );
 		Gtk::Button* bdeletefile = new Gtk::Button("Delete");
-			bdeletefile->signal_clicked().connect([=]() { FBDeleteFile(id); } );
+			bdeletefile->signal_clicked().connect([this,id]() { FBDeleteFile(id); } );
 
-		col1->pack_start(*lid);
-		col2->pack_start(*lname);
-		col3->pack_start(*lsize);
-		col4->pack_start(*bgetfile);
-		col5->pack_start(*bdeletefile);
+		bret->attach(*lid,0,i,1,1);
+		bret->attach(*lname,1,i,1,1);
+		bret->attach(*lsize,2,i,1,1);
+		bret->attach(*bgetfile,3,i,1,1);
+		bret->attach(*bdeletefile,4,i,1,1);
 	}
-
-	bret->pack_start(*col1);
-	bret->pack_start(*col2);
-	bret->pack_start(*col3);
-	bret->pack_end(*col4);
-	bret->pack_end(*col5);
-	
 
 	return bret;
 }
 
 void Fenetre::SetButtons()
 {	
-	printf("INIT BUTTONS\n");
-
 	this->BQuitter = new Gtk::Button("Quit");
-		BQuitter->signal_clicked().connect([this]() {FBQuitter(); });
-	this->BRegister = new Gtk::Button("Register");
-		BRegister->signal_clicked().connect([this]() {FBRegister(); });
-	this->BUnregister = new Gtk::Button("Unregister");
-		BUnregister->signal_clicked().connect([this]() {FBUnregister(); });
+		BQuitter->signal_clicked().connect([=]() {FBQuitter(); });
 	this->BFindFile = new Gtk::Button("Find File");
-		BFindFile->signal_clicked().connect([this]() {FBFindFile(); });
+		BFindFile->signal_clicked().connect([=]() {FBFindFile(); });
+	this->BGetPeerListEntry = new Gtk::Button("GetPeerList");
+		BGetPeerListEntry->signal_clicked().connect([=]() {
+			std::string peer = this->ETextePeer->get_text();
+			if(peer == "")
+				return;
+			this->FBGetPeerList(peer);
+		});
 
 	this->ScrollPeer = new Gtk::ScrolledWindow();
 		ScrollPeer->set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
-	this->BPeerList = SetListPeer(client->configuration->listePair);
-		this->ScrollPeer->add(*this->BPeerList);
 
 	this->ScrollFile = new Gtk::ScrolledWindow();
 		ScrollFile->set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
-	this->BFileList = SetListFile(serveur->listeFichier);
-		this->ScrollFile->add(*this->BFileList);
+
+	this->BFileList = NULL;
+	this->BPeerList = NULL;
 
 	this->ETextePeer = new Gtk::Entry();
-		this->ETextePeer->set_max_length(22);
+		ETextePeer->set_max_length(22);
 
 	this->ETexteFile = new Gtk::Entry();
-		this->ETexteFile->set_max_length(256);
+		ETexteFile->set_max_length(256);
+
+	this->BOpenServeur = new Gtk::Button("Open Serveur");
+		BOpenServeur->signal_clicked().connect([=]() { FBOpenServeur(); });
+	this->BCloseServeur = new Gtk::Button("Close Serveur");
+		BCloseServeur->signal_clicked().connect([=]() { FBCloseServeur(); });
 
 
 }
+
 void Fenetre::AddButtons()
 {
-	printf("INIT WINDOW\n");
-
-	Gtk::Table* table = new Gtk::Table(6,16);
+	Gtk::Grid* grid = new Gtk::Grid();
+	grid->set_row_homogeneous(true);
+	grid->set_column_homogeneous(true);
 	
-		Gtk::Frame* frameN2_1 = new Gtk::Frame("Pair");
+		Gtk::Frame* frameN2_1 = new Gtk::Frame("Peer");
 			Gtk::HButtonBox* boiteN2_1 = new Gtk::HButtonBox(Gtk::BUTTONBOX_CENTER,10);
 				boiteN2_1->pack_start(*this->ETextePeer);
-				boiteN2_1->pack_start(*this->BRegister);
-				boiteN2_1->pack_start(*this->BUnregister);
+				boiteN2_1->pack_start(*this->BGetPeerListEntry);
 			frameN2_1->add(*boiteN2_1);
-		table->attach(*frameN2_1,0,6,0,1,Gtk::FILL);
+		grid->attach(*frameN2_1,0,0,3,1);
 
-		Gtk::Frame* frameN3_3 = new Gtk::Frame("Fichier");
+		Gtk::Frame* frameN3_3 = new Gtk::Frame("Import File");
 			Gtk::HButtonBox* boiteN2_3 = new Gtk::HButtonBox(Gtk::BUTTONBOX_CENTER,10);
 				boiteN2_3->pack_start(*this->ETexteFile);
 				boiteN2_3->pack_start(*this->BFindFile);
 			frameN3_3->add(*boiteN2_3);
-		table->attach(*frameN3_3,0,6,1,2,Gtk::FILL);
+		grid->attach(*frameN3_3,3,0,3,1);
 
-		Gtk::Frame* frameN2_2 = new Gtk::Frame("Liste des Pairs");
+		Gtk::Frame* frameN2_2 = new Gtk::Frame("Peer list");
 				frameN2_2->add(*this->ScrollPeer);
-		table->attach(*frameN2_2,0,6,2,8,Gtk::FILL);
+		grid->attach(*frameN2_2,0,1,6,5);
 
-		Gtk::Frame* frameN2_3 = new Gtk::Frame("Liste des fichiers");
+		Gtk::Frame* frameN2_3 = new Gtk::Frame("File list");
 			frameN2_3->add(*this->ScrollFile);
-		table->attach(*frameN2_3,0,6,8,15,Gtk::FILL);
+		grid->attach(*frameN2_3,0,6,6,5);
 
-		table->attach(*this->BQuitter,0,6,15,16,Gtk::FILL,Gtk::SHRINK);
+		grid->attach(*this->BQuitter,5,11,1,1);
 
-	this->align->add(*table);
+		Gtk::Frame* frameN2_4 = new Gtk::Frame("My Server");
+			Gtk::HButtonBox* boiteN3_1 = new Gtk::HButtonBox(Gtk::BUTTONBOX_CENTER,10);
+				boiteN3_1->pack_start(*this->BOpenServeur);
+				boiteN3_1->pack_start(*this->BCloseServeur);
+			frameN2_4->add(*boiteN3_1);
+		grid->attach(*frameN2_4,0,11,2,1);
+
+	this->align->add(*grid);
 }
 
+void Fenetre::MajListFile(std::vector<File> fl)
+{
+	this->ScrollFile->remove_with_viewport();
+	this->BFileList = SetListFile(fl);
+	this->ScrollFile->add(*this->BFileList);
+
+	this->show_all();
+}
+
+void Fenetre::MajListPeer(std::vector<Peer> pl)
+{
+	this->ScrollPeer->remove_with_viewport();
+	this->BPeerList = SetListPeer(pl);
+	this->ScrollPeer->add(*this->BPeerList);
+
+	this->show_all();
+}
 
 void Fenetre::FBQuitter()
 {
 	Gtk::Main::quit();
 }
 
-void Fenetre::FBRegister()
+void Fenetre::FBRegister(std::string url)
 {
-	
+	std::string peer = this->ETextePeer->get_text();
+	if(peer == "")
+		return;
+
+	this->client->enregistrer_pair_client(url,peer);
+
+	FBGetPeerList(url);
 }
 
-void Fenetre::FBUnregister()
+void Fenetre::FBUnregister(std::string url)
 {
+	std::string peer = this->ETextePeer->get_text();
+	if(peer == "")
+		return;
+	
+	this->client->desenregistrer_pair_client(url,peer);
 
+	FBGetPeerList(url);
 }
 
     	
 void Fenetre::FBGetPeerList(std::string peer)
 {
-	
-
+	this->client->obtenir_liste_pair_client(peer);
+	this->urlSelec = peer;
+	MajListPeer(this->client->listePair);
 }
 
 void Fenetre::FBGetFileList(std::string peer)
 {
-
+	this->client->obtenir_liste_fichier_client(peer);
+	MajListFile(this->client->obtenir_liste_fichier_d_un_pair(peer));
 }
 
 
 void Fenetre::FBGetFile(std::string id)
 {
-
+	this->client->obtenir_fichier_client(urlSelec,id);
 }
 
 void Fenetre::FBSendFile(std::string peer)
 {
-	std::cout << peer << std::endl;
-	std::string name = this->ETexteFile->get_text();
-	name = name.substr(name.rfind("/")+1,name.size());
-	
-	File f;
-	f.name = name;
-	f.body = this->ETexteFile->get_text();
-	f.size = 0;
+	try {
 
-	this->client->sauvegarder_fichier_client(peer,f);
+		std::string name = this->ETexteFile->get_text();
+		if(name == "")
+			return;
+
+		std::ifstream sfile(name,std::ios::in);
+		if(!sfile)
+			return;
+		sfile.close();
+
+		if(name.rfind("/"))
+			name = name.substr(name.rfind("/")+1,name.size());
+
+		File f;
+		f.name = name;
+		f.body = this->ETexteFile->get_text();
+		f.size = 0;
+
+		this->client->sauvegarder_fichier_client(peer,f);
+
+		FBGetFileList(peer);
+	}catch(std::exception e)
+	{
+
+	}
 }
 
 void Fenetre::FBFindFile()
@@ -232,7 +282,6 @@ void Fenetre::FBFindFile()
 	Gtk::FileChooserDialog FCDial = Gtk::FileChooserDialog("Please choose a file",Gtk::FILE_CHOOSER_ACTION_OPEN);
 	FCDial.add_button("_Cancel", Gtk::RESPONSE_CANCEL);
   	FCDial.add_button("_Open", Gtk::RESPONSE_OK);
-
 
   	int result = FCDial.run();
 
@@ -256,10 +305,26 @@ void Fenetre::FBFindFile()
 
 void Fenetre::FBDeleteFile(std::string id)
 {
-
+	this->client->supprimer_fichier_client(urlSelec,id);
+	FBGetFileList(urlSelec);
 }
 
 void Fenetre::FBDisplayFiles(std::string peer)
 {
+	MajListFile(this->client->obtenir_liste_fichier_d_un_pair(peer));
+}
 
+void Fenetre::FBOpenServeur()
+{
+	if(this->serveur == NULL)
+		this->serveur = new Serveur(this->client->configuration);
+
+	if(this->serveur != NULL)
+		this->serveur->Open();
+}
+
+void Fenetre::FBCloseServeur()
+{
+	if(this->serveur != NULL)
+		this->serveur->Close();
 }

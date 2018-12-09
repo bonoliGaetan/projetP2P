@@ -1,7 +1,10 @@
 #include "serServerP2P.h"
 
 
-SerServerP2P::SerServerP2P() {}
+SerServerP2P::SerServerP2P()
+{
+
+}
 
 SerServerP2P::SerServerP2P(ConfigPeer* pcf)
 {
@@ -23,38 +26,31 @@ SerServerP2P::SerServerP2P(ConfigPeer* pcf)
 	logFile2<< "";
 	logFile2.close();
 
-	this->serverListener = NULL;
+	this->serverListener = new http_listener("http://0.0.0.0:" +cf->myPort);
+		serverListener->support("GET",[=] (http_request req) { traiterRequete(req); });
+		serverListener->support("POST",[=] (http_request req) { traiterRequete(req); });
+		serverListener->support("DELETE",[=] (http_request req) { traiterRequete(req); });
+
+	this->serverListener->open().wait();
+
+	this->isClosed = true;
 }
 
 SerServerP2P::~SerServerP2P() 
 {
+	std::cout << "END SERVICE SERVEUR P2P" << std::endl;
 	CloseListener();
 }
 
 void SerServerP2P::OpenListener()
 {
-	try {
-		CloseListener();
-
-		this->serverListener = new http_listener("http://0.0.0.0:" +cf->myPort);
-		serverListener->support("GET",[=] (http_request req) { traiterRequete(req); });
-		serverListener->support("POST",[=] (http_request req) { traiterRequete(req); });
-		serverListener->support("DELETE",[=] (http_request req) { traiterRequete(req); });
-
-		this->serverListener->open().wait();
-	} catch(std::exception e)
-	{
-		exit(0);
-	}
+	std::cout << "Le serveur écoute sur : " << this->cf->myUrl << std::endl;
+	this->isClosed = false;
 }
 void SerServerP2P::CloseListener()
 {
-	if(this->serverListener != NULL)
-	{
-		this->serverListener->close();
-		delete this->serverListener;
-		this->serverListener = NULL;
-	}
+	std::cout << "Le serveur n'écoute plus sur : " << this->cf->myUrl << std::endl;
+	this->isClosed = true;
 }
 
 
@@ -68,9 +64,9 @@ void SerServerP2P::traiterRequete(http_request req)
 		
 		int iFctTrait = getRequestTree(url,method,paramUrl);
 		
-		if(iFctTrait == -1)
+		if((iFctTrait == -1)||(this->isClosed))
 		{
-			req.reply(status_codes::NotFound, json::value::object());
+			req.reply(status_codes::NotFound, json::value());
 			return;
 		}
 

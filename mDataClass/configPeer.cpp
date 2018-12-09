@@ -28,8 +28,6 @@ ConfigPeer::ConfigPeer(std::string file)
 
 	this->myUrl = myAddress +":" +myPort;
 
-	this->listePair = std::vector<Peer>();
-
 }
 ConfigPeer::ConfigPeer() {}
 
@@ -128,7 +126,11 @@ std::vector<File> JsonToListFile(json::value val)
 {
 	std::vector<File> lfret;
 	
-	json::value jlist = val.at("list");
+	json::value jlist = val["list"];
+
+	if(jlist == json::value::null())
+		return std::vector<File>();
+
 	for(int i = 0; jlist[i] != json::value::null() ; ++i)
 		lfret.push_back(File::FromJson(jlist[i]));
 
@@ -139,7 +141,11 @@ std::vector<Peer> JsonToListPeer(json::value val)
 {
 	std::vector<Peer> lpret;
 	
-	json::value jlist = val.at("list");
+	json::value jlist = val["list"];
+
+	if(jlist == json::value::null())
+		return std::vector<Peer>();
+
 	for(int i = 0; jlist[i] != json::value::null() ; ++i)
 		lpret.push_back(Peer::FromJson(jlist[i]));
 
