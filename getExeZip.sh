@@ -3,12 +3,7 @@ ZIP="false"
 
 if test $# -ge 1
 then
-	OSSYS="${1}"	
-fi
-
-if test $# -ge 2
-then
-	ZIP="${2}"
+	ZIP="${1}"
 fi
 
 if [ ${OSSYS} = "linux" ] 
@@ -21,7 +16,7 @@ then
 	fi
 
 	cp scripts/initConfigLinux.sh appLinuxDir/
-
+	cp scripts/installLibs.sh appLinuxDir/
 	
 	make clean appliLinux OS=linux
 	cp appliLinux.exe appLinuxDir/

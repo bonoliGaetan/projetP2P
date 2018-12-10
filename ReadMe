@@ -1,28 +1,31 @@
-Script lancable que sous linux : getExeZip.sh
----------------------------------------------
+/!\ Compilation possible que sous linux
+/!\ Aucune portabilité sur Windows
 
-Pour obtenir l'application sous linux :
+Au préalable lancer script/installLibs.sh pour installer les librairies nécessaires à la compilation et à l'éxecution
 
-./getExeZip.sh linux
+Compiler l'application (linux) : getExeZip.sh
+------------------------------------
+(Ajouter true en argument pour obtenir un zip au lieu d'un répertoire)
+
+---- Pour obtenir l'application sous linux :
+
+./getExeZip.sh
 
 Ce script génère un zip avec :
 un exécutable : peer.exe (application)
 un script d'initialisation de la config de l'application : initConfigLinux.sh
 >> le script à lancer avant l'exécution de l'application
+>>Il créera le fichier de configuration, et les répertoires nécessaires à l'application
+un script d'instalation des librairies nécessaire au lancement de l'application
 
+Lancer l'application (linux):
+----------------------------------
 
-Pour obtenir l'application sous windows :
+Lancer le script suivant si ce n'est pas déja fait sur la machine : 
+./installLibs.sh
 
-./getExeZip.sh windows
+Lancer le script suivant lorsque l'ordinateur se connecte à un nouveau réseaux  (ou au démarrage de la machine)
+./initConfigLinux.sj
 
-Ce script génère un zip avec :
-un exécutable : peer.exe (application)
-un script d'initialisation de la config de l'application : initConfigWindows.sh
->> le script à lancer avant l'exécution de l'application
-
-
-Les intéractions entre peers ne fonctionnent que en local
-Pour démarer un connexion avec un autre peer, avant lancement de l'application, 
-lancer le script initConfig<OS>.sh avec l'adresse local du 2e peer en paramètre.
-
-
+Lancer un serveur : ./appliLinux.exe s
+Lancer un client : ./appliLinux.exe
